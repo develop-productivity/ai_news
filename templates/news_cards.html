@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Noto Sans SC', -apple-system, sans-serif;
+    background: #e8e8e8;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*── Subtle background pattern ──*/
+  .bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(255, 97, 0, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 75% 70%, rgba(255, 97, 0, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /*── Header ──*/
+  .header {
+    position: relative;
+    z-index: 1;
+    padding: 32px 56px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+  .header .logo {
+    font-size: 32px;
+    font-weight: 800;
+    color: #222222;
+    letter-spacing: 1.5px;
+  }
+  .header .logo .accent {
+    color: #ff6100;
+  }
+  .header .date {
+    font-size: 15px;
+    font-weight: 400;
+    color: #888888;
+    padding-bottom: 2px;
+  }
+  .header .bar {
+    flex: 1;
+    height: 1px;
+    background: #d0d0d0;
+    margin-left: 8px;
+  }
+
+  /*── Main content ──*/
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: 0 48px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  /*── Row ──*/
+  .section-row {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /*── Card ──*/
+  .card {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    position: relative;
+    border: 1px solid #f0f0f0;
+  }
+
+  /* Card top accent bar */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: #dddddd;
+  }
+  .card-accent-github::before  { background: #2ea043; }
+  .card-accent-paper::before   { background: #d4a017; }
+  .card-accent-company::before { background: #00b4d8; }
+  .card-accent-oss::before     { background: #7b2ff7; }
+  .card-accent-news::before    { background: #ff6100; }
+
+  /*── Card header ──*/
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .card-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+  .icon-github { background: rgba(46, 160, 67, 0.10); color: #2ea043; }
+  .icon-paper  { background: rgba(212, 160, 23, 0.10); color: #d4a017; }
+  .icon-company { background: rgba(0, 180, 216, 0.10); color: #00b4d8; }
+  .icon-oss    { background: rgba(123, 47, 247, 0.10); color: #7b2ff7; }
+  .icon-news   { background: rgba(255, 97, 0, 0.10); color: #ff6100; }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333333;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /*── Card body ──*/
+  .card-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .news-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #f3f3f3;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .news-item:last-child {
+    border-bottom: none;
+  }
+
+  .news-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #cccccc;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .card-accent-github .news-dot  { background: #2ea043; }
+  .card-accent-paper .news-dot   { background: #d4a017; }
+  .card-accent-company .news-dot { background: #00b4d8; }
+  .card-accent-oss .news-dot     { background: #b388ff; }
+  .card-accent-news .news-dot    { background: #ff6100; }
+
+  .news-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: #444444;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .news-text strong {
+    font-weight: 600;
+    color: #222222;
+  }
+
+  /*── Count badge ──*/
+  .count-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #f5f5f5;
+    color: #999999;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /*── Footer ──*/
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 10px 56px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 56px;
+    right: 56px;
+    height: 1px;
+    background: #d0d0d0;
+  }
+  .footer-text {
+    font-size: 12px;
+    color: #aaaaaa;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+  .footer .spacer { flex: 1; }
+  .footer .brand {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ff6100;
+    letter-spacing: 1.5px;
+  }
+
+  /*── Animations ──*/
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card { animation: cardIn 0.5s ease-out both; }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">AI <span class="accent">NEWS</span></div>
+  <div class="date">{{ date }}</div>
+  <div class="bar"></div>
+</div>
+
+<!-- Content -->
+<div class="content">
+  {% for row in rows %}
+  <div class="section-row">
+    {% for card in row %}
+    <div class="card card-accent-{{ card.accent }}">
+      <div class="card-header">
+        <div class="card-icon icon-{{ card.accent }}">{{ card.icon }}</div>
+        <div class="card-title">{{ card.label }}</div>
+        <div class="count-badge">{{ card.entries|length }}</div>
+      </div>
+      <div class="card-body">
+        {% for item in card.entries %}
+        <div class="news-item">
+          <div class="news-dot"></div>
+          <div class="news-text">{{ item.text }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <span class="footer-text">每日 AI 资讯速览</span>
+  <div class="spacer"></div>
+  <span class="brand">AI NEWS · {{ date_compact }}</span>
+</div>
+</body>
+</html>
