@@ -17,7 +17,7 @@ import json
 import argparse
 import time
 
-MINIMAX_API_KEY = "sk-api-NpC61U7Dl83tZIHXRqjOUhIhArzkN4ATDNJBrhjzzEtRcfzivDdc7QW4GXLq09ykyO93ihop3CoeHfMHcJPv9DbLmRmHOhTJlxysnANfu-b_-VF9io8SAAA"
+MINIMAX_API_KEY = "API_KEY_HERE"  # 替换为你的 MiniMax API Key
 OUTPUT_DIR = "/mnt/d/wsl_data/ai_new_product/processed/audio"
 
 
