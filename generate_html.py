@@ -29,15 +29,7 @@ except ImportError:
 SCRIPT_DIR = Path(__file__).parent
 TEMPLATE_DIR = SCRIPT_DIR / "templates"
 # Try to find ai_new_product relative to project structure
-for candidate in [
-    SCRIPT_DIR.parent.parent / "ai_new_product" / "processed",
-    SCRIPT_DIR.parent / "ai_new_product" / "processed",
-]:
-    if candidate.exists():
-        PROD_DIR = candidate
-        break
-else:
-    PROD_DIR = SCRIPT_DIR.parent / "ai_new_product" / "processed"
+PROD_DIR = SCRIPT_DIR / "output"
 
 TEMPLATE_NAME = "news_cards.html"
 today_str = date.today().isoformat
@@ -238,9 +230,8 @@ def generate_html(md_path: Optional[str] = None, output_path: Optional[str] = No
         td = date.today().isoformat()
         md_file = PROD_DIR / f"{td}_refined.md"
         if not md_file.exists():
-            # Also check raw file
-            raw_dir = SCRIPT_DIR
-            md_file = raw_dir / f"{td}_ai_news.md"
+            # fallback to raw
+            md_file = SCRIPT_DIR / f"{td}_ai_news.md"
 
     if not md_file.exists():
         print(f"[ERROR] 未找到精炼版文件，请先运行: python3 produce_news.py")

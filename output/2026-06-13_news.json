@@ -1,0 +1,251 @@
+{
+  "date": "2026-06-13",
+  "date_formatted": "2026年06月13日",
+  "weekday": "星期六",
+  "sections": [
+    {
+      "label": "GitHub 热门趋势",
+      "icon": "star",
+      "accent": "github",
+      "items": [
+        {
+          "title": "addyosmani/agent-skills",
+          "detail": "Production-grade engineering skills for AI coding agents."
+        },
+        {
+          "title": "music-assistant/server",
+          "detail": "Music Assistant is a free, opensource Media library manager that connects to you..."
+        },
+        {
+          "title": "mattermost/mattermost",
+          "detail": "Mattermost is an open source platform for secure collaboration across the entire..."
+        },
+        {
+          "title": "apple/container",
+          "detail": "A tool for creating and running Linux containers using lightweight virtual machi..."
+        },
+        {
+          "title": "iptv-org/iptv",
+          "detail": "Collection of publicly available IPTV channels from all over the world"
+        },
+        {
+          "title": "obra/superpowers",
+          "detail": "An agentic skills framework & software development methodology that works."
+        }
+      ]
+    },
+    {
+      "label": "HF 论文精选",
+      "icon": "diamond",
+      "accent": "paper",
+      "items": [
+        {
+          "title": "On the Limits of LLM Adaptability: Impact of Model-Internalized Priors on Annotation Task Performance",
+          "detail": "Large Language Models (LLMs) are increasingly used for zero-shot annotation and LLM-as-a-judge tasks, yet their reliability hinges on how model-internalized priors interact with user-provided instruct"
+        },
+        {
+          "title": "Rethinking Psychometric Evaluation of LLMs: When and Why Self-Reports Predict Behavior",
+          "detail": "Anticipating LLM behavioral tendencies from low-cost psychometric probes is critical for safe deployment, but only if self-reports (SR) reliably predict behavior. Recent work documented substantial SR"
+        },
+        {
+          "title": "See What I See, Know What I Think: Dense Latent Communication Across Heterogeneous Agents",
+          "detail": "Multi-agent systems communicate mostly through text, paying a lossy and expensive decode and re-encode cost. KV-cache communication is a promising alternative, yet most prior work is homogeneous, usin"
+        },
+        {
+          "title": "Getting Better at Working With You: Compiling User Corrections into Runtime Enforcement for Coding Agents",
+          "detail": "Interactive LLM agents are becoming part of daily work, but they do not reliably become easier to work with over time: a correction remembered in one session may still be violated in the next. We stud"
+        },
+        {
+          "title": "WebChallenger: A Reliable and Efficient Generalist Web Agent",
+          "detail": "Autonomous web navigation remains challenging for LLM agents, and the strongest generalist systems rely on proprietary reasoning models whose inference cost is prohibitive for the repetitive tasks whe"
+        },
+        {
+          "title": "The Cold-Start Safety Gap in LLM Agents",
+          "detail": "Are tool-calling LLM agents equally safe throughout a conversation? We discover they are not: agents are most vulnerable at the very start of a session and become substantially safer after a few regul"
+        }
+      ]
+    },
+    {
+      "label": "今日论文精选",
+      "icon": "diamond",
+      "accent": "paper",
+      "items": [
+        {
+          "title": "OneRetrieval: Unifying Multi-Branch E-commerce Retrieval with an Editable Generative Model",
+          "detail": "Industrial e-commerce search serves hundreds of millions of items through a multi-branch retrieval stage fused by hand-tuned merging without joint optimization. Generative retrieval (GR) raises the pr"
+        },
+        {
+          "title": "CQC-RAG: Robust Retrieval-Augmented Generation via Cross-Query Consistency",
+          "detail": "Retrieval-Augmented Generation (RAG) has become a common approach for improving the factuality of Large Language Models (LLMs), yet its reliability remains highly sensitive to how external evidence is"
+        },
+        {
+          "title": "TimeLens: On-Device Artifact Recognition with Retrieval-Augmented Question Answering for the Grand Egyptian Museum",
+          "detail": "TimeLens is an AI-powered bilingual mobile guide for the Grand Egyptian Museum (GEM). Pointing a phone at an exhibit, a visitor sees the artifact recognized in real time and can ask follow-up question"
+        },
+        {
+          "title": "CoDeR: Local Constraint-Compatible Retrieval Beyond Semantic Similarity",
+          "detail": "Information retrieval systems have long treated semantic similarity as a proxy for relevance. For constraint-sensitive queries, this proxy can fail when a document is topically close to the query but "
+        },
+        {
+          "title": "The Clustering Strikes Back: Building Cost-Effective and High-Performance ANNS at Scale with Helmsman",
+          "detail": "RedNote (a.k.a., Xiaohongshu, a global-scale social network platform) widely adopts approximate nearest neighbor search (ANNS) to power its search, recommendation, and advertising services. Due to the"
+        },
+        {
+          "title": "CFALR: Collaborative Filtering-Augmented Large Language Model for Personalized Fashion Outfit Recommendation",
+          "detail": "Personalized outfit recommendation poses a significant challenge in e-commerce and social media platforms, requiring systems that balance user preferences with aesthetic compatibility. Collaborative f"
+        }
+      ]
+    },
+    {
+      "label": "国际 AI 新闻",
+      "icon": "globe",
+      "accent": "news",
+      "items": [
+        {
+          "title": "Andrew Yang thinks the next big startup opportunity is lowering the cost of living",
+          "detail": "Andrew Yang made a list of everything Americans overpay for — housing, food, wireless — and thinks the next startup gold rush is giving that money back."
+        },
+        {
+          "title": "Anthropic’s safety warnings may have just backfired — the government has pulled the plug on its most powerful AI",
+          "detail": "Anthropic isn't hiding its frustration. \"We disagree that the finding of a narrow potential jailbreak should be cause for recalling a commercial model deployed to hundreds of millions of people,\" the "
+        },
+        {
+          "title": "SpaceX IPO: Live updates on everything you need to know",
+          "detail": "TechCrunch has followed SpaceX's start, struggles, and successes from the early days. And we're here for what happens next too. This package of SpaceX IPO coverage includes who stands to win (and mayb"
+        },
+        {
+          "title": "Meta’s months-old AI unit is a soul-crushing gulag, say the engineers stuck inside it",
+          "detail": "A new report suggests the unit, which employs 6,500 people, is on the verge of revolt."
+        },
+        {
+          "title": "Chinese cybercrime operation that used AI to scam ‘hundreds of thousands of victims’ sued by Google",
+          "detail": "The tech giant said a group called \"Outsider Enterprise\" used AI to scam hundreds of thousands of victims, sending 2.5 million text messages over a span of two weeks."
+        },
+        {
+          "title": "SpaceX is now a public company valued for its AI potential, so what comes next?",
+          "detail": "As of today, SpaceX is owned by investors who will want to see it make money."
+        }
+      ]
+    },
+    {
+      "label": "国内 AI 新闻",
+      "icon": "globe",
+      "accent": "news",
+      "items": [
+        {
+          "title": "智谱：GLM-5.2 将面向 GLM Coding Plan 全量用户开放，模型下周正式开源",
+          "detail": ""
+        },
+        {
+          "title": "Day-0 支持，摩尔线程完成 MiniMax M3 大模型适配",
+          "detail": ""
+        },
+        {
+          "title": "微软开源 iOS 流式 Markdown 渲染库，专门针对 AI 大模型聊天场景优化",
+          "detail": ""
+        },
+        {
+          "title": "月之暗面开源 Kimi K2.7 Code 编程模型，预告 6 倍速高速版周一见",
+          "detail": ""
+        },
+        {
+          "title": "探索 AI 智能体交易新模式，Visa 与 OpenAI 达成合作",
+          "detail": ""
+        },
+        {
+          "title": "最强文本转 SQL 任务 AI 模型：谷歌发布 Gemini-SQL2，准确率 80.04% 登顶",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "label": "国际公司动态",
+      "icon": "building",
+      "accent": "company",
+      "items": [
+        {
+          "title": "Hugging Face Blog · olmo-eval: An evaluation workbench for the model development loop",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · Profiling in PyTorch (Part 2): From nn.Linear to a Fused MLP",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · Introducing North Mini Code: Cohere’s First Model For Developers",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · How an Agent Built a 3D Paris Gallery by Chaining Two Hugging Face Spaces",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · Migrating Your GitHub CI to Hugging Face Jobs",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "label": "国内公司动态",
+      "icon": "building",
+      "accent": "company",
+      "items": [
+        {
+          "title": "百度 文心一言 · 30 秒速读 6 月 9 日 618 攻略：百度网盘 SVIP 年卡 162 元，京东联合年卡 138 元年内新低",
+          "detail": ""
+        },
+        {
+          "title": "DeepSeek · DeepSeek 梁文锋当年拿高考状元照片曝光：过了清华线，但报了浙大",
+          "detail": ""
+        },
+        {
+          "title": "智谱AI · 智谱：GLM-5.2 将面向 GLM Coding Plan 全量用户开放，模型下周正式开源",
+          "detail": ""
+        },
+        {
+          "title": "MiniMax · Day-0 支持，摩尔线程完成 MiniMax M3 大模型适配",
+          "detail": ""
+        },
+        {
+          "title": "MiniMax · 华为云与 MiniMax 最新模型 M3 实现开源首发适配，提供 Tokens 算力支持",
+          "detail": ""
+        },
+        {
+          "title": "腾讯 混元 · 腾讯旗下手游《无畏契约：源能行动》鸿蒙版开启预约，现已登陆华为游戏中心",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "label": "社区热点",
+      "icon": "message-circle",
+      "accent": "oss",
+      "items": [
+        {
+          "title": "HackerNews Top · Leaving Mozilla",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Shepherd's Dog: A Game by the Most Dangerous AI Model",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Statement on US government directive to suspend access to Fable 5 and Mythos 5",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Electric motors with no rare earths",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · There is a shadow hanging over this Fable thing",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · CRISPR tech selectively shreds cancer cells, including \"undruggable\" cancers",
+          "detail": ""
+        }
+      ]
+    }
+  ]
+}

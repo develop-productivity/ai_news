@@ -1,1 +1,4 @@
 .env
+./output
+*_ai_news.md
+.venv
