@@ -6,8 +6,8 @@ AI 日报 API 服务
 供 zero-to-tech 等前端项目请求最新日报内容。
 
 用法:
-  python3 server.py                  # 默认 0.0.0.0:8000
-  python3 server.py --port 3000      # 指定端口
+  python3 server.py                  # 默认 0.0.0.0:8001
+  python3 server.py --port 8002      # 指定端口
   python3 server.py --date latest   # 使用本地已有最新数据
 """
 
@@ -67,7 +67,7 @@ def load_cards(date_str=None):
     return path.read_text(encoding="utf-8")
 
 
-@app.get("/api/news")
+@app.get("/api/v1/ai_news/news")
 def get_news(date: str = Query(default=None, description="日期 YYYY-MM-DD，不填则返回最新")):
     """返回结构化日报 JSON"""
     data = load_news(date)
@@ -79,7 +79,7 @@ def get_news(date: str = Query(default=None, description="日期 YYYY-MM-DD，�
     return data
 
 
-@app.get("/api/cards")
+@app.get("/api/v1/ai_news/cards")
 def get_cards(date: str = Query(default=None, description="日期 YYYY-MM-DD")):
     """返回渲染好的 HTML 卡片"""
     html = load_cards(date)
@@ -91,7 +91,7 @@ def get_cards(date: str = Query(default=None, description="日期 YYYY-MM-DD")):
     return HTMLResponse(html)
 
 
-@app.get("/api/dates")
+@app.get("/api/v1/ai_news/dates")
 def list_dates():
     """列出所有可用日期"""
     files = sorted(OUTPUT_DIR.glob("*_news.json"), reverse=True)
@@ -101,7 +101,7 @@ def list_dates():
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="AI Daily News API server")
-    p.add_argument("--port", type=int, default=8000, help="Listen port")
+    p.add_argument("--port", type=int, default=8001, help="Listen port")
     p.add_argument("--host", default="0.0.0.0", help="Listen host")
     args = p.parse_args()
 
@@ -110,9 +110,9 @@ if __name__ == "__main__":
     print(f"  📰 AI Daily News API")
     print(f"  📡 http://{args.host}:{args.port}")
     print(f"  📅 最新数据: {latest or '暂无，请先采集'}")
-    print(f"  🔗 /api/news   — 结构化日报 JSON")
-    print(f"  🔗 /api/cards  — 渲染好的 HTML 卡片")
-    print(f"  🔗 /api/dates  — 可用日期列表")
+    print(f"  🔗 /api/v1/ai_news/news   — 结构化日报 JSON")
+    print(f"  🔗 /api/v1/ai_news/cards  — 渲染好的 HTML 卡片")
+    print(f"  🔗 /api/v1/ai_news/dates  — 可用日期列表")
     print("="*50)
 
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")
