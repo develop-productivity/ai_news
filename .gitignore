@@ -1,4 +1,13 @@
 .env
-./output
+.venv/
+.pip_pkgs/
+__pycache__/
+*.pyc
+
+# 滚动产物目录：默认不提交中间文件；保留可部署的 news.json 种子
+output/*
+!output/.gitkeep
+!output/news.json
+
+# 根目录遗留的日期原始稿
 *_ai_news.md
-.venv

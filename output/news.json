@@ -1,0 +1,216 @@
+{
+  "date": "2026-08-10",
+  "date_formatted": "2026年08月10日",
+  "weekday": "星期一",
+  "sections": [
+    {
+      "label": "GitHub 热门趋势",
+      "icon": "star",
+      "accent": "github",
+      "items": [
+        {
+          "title": "semantica-agi/semantica",
+          "detail": "Graph-Native Infrastructure for Context and Accountable AI Systems"
+        },
+        {
+          "title": "msitarzewski/agency-agents",
+          "detail": "A complete AI agency at your fingertips - From frontend wizards to Reddit commun..."
+        },
+        {
+          "title": "addyosmani/agent-skills",
+          "detail": "Production-grade engineering skills for AI coding agents."
+        },
+        {
+          "title": "paperclipai/paperclip",
+          "detail": "The open-source app everyone uses to manage agents at work"
+        },
+        {
+          "title": "PrimeIntellect-ai/prime-agent",
+          "detail": "A self-improving RLM agent for coding workflows and long-running autonomous task..."
+        },
+        {
+          "title": "danielmiessler/LifeOS",
+          "detail": "⛰️A General Hill-climbing AI harness that helps you move from Current State to I..."
+        }
+      ]
+    },
+    {
+      "label": "HF 论文精选",
+      "icon": "diamond",
+      "accent": "paper",
+      "items": [
+        {
+          "title": "Relevant but Incomplete: Referential Dangling as a Paradigm-Level Failure Mode in Hard Prompt Compression",
+          "detail": "Hard prompt compression reduces long-context inference cost by independently scoring tokens, sentences, or chunks and retaining the highest-scoring units under a budget. We identify a structural failu"
+        },
+        {
+          "title": "Small Foundation Models of Human Cognition and Behaviour",
+          "detail": "Large language models fine-tuned on human behavioural data have emerged as general-purpose cognitive proxies, but the scale this requires, and whether these models process task structure or exploit st"
+        },
+        {
+          "title": "Adversarial Attacks for Good: A Survey of Proactive Protection across the Visual Content Lifecycle",
+          "detail": "Once visual content enters an AI pipeline, its owner often retains little technical control over how it is used. Legal and regulatory remedies can address misuse, but many technical interventions must"
+        },
+        {
+          "title": "When Activation Oracles Learn Not to Read: Concept-Specific Blind Spots in Fine-Tuned Oracles",
+          "detail": "Activation Oracles (AOs) are language models trained to answer natural-language questions about another model's internal activations. They offer a flexible interface for reading hidden information fro"
+        },
+        {
+          "title": "FATE: Frame-Level Audio-Visual Temporal Embedding",
+          "detail": "When a dog opens its mouth and barks, humans naturally recognize what the sound is and when it occurs. Building audio-visual models with this same ability requires representations that capture both se"
+        },
+        {
+          "title": "Efficient Knowledge Distillation for LLMs: Offline Top-K Logits and a Fused Chunked KL Loss",
+          "detail": "Small language models are often the only option for deployment under tight latency, cost, and on-premises constraints, but they are rarely trained from scratch: a compressed model is usually recovered"
+        }
+      ]
+    },
+    {
+      "label": "国际 AI 新闻",
+      "icon": "globe",
+      "accent": "news",
+      "items": [
+        {
+          "title": "Discovered Materials is playing AI whack-a-mole to hunt cooler chips",
+          "detail": "Discovered Materials raised $9 million to fund the hunt for more novel materials to build more efficient chips."
+        },
+        {
+          "title": "Embattled hedge fund Situational Awareness invests $400M in chip startup Source Foundry",
+          "detail": "The AI-focused hedge fund is still making some big bets."
+        },
+        {
+          "title": "Anthropic is turning Claude Code’s auto mode on by default",
+          "detail": "Programming with Claude Code will soon require even less human oversight."
+        },
+        {
+          "title": "Historian Jill Lepore says Silicon Valley misreads science fiction and undermines democracy",
+          "detail": "On the latest episode of Equity, we spoke to Jill Lepore about \"government by machines\" and why Elon Musk is a bad science fiction reader."
+        },
+        {
+          "title": "The AI safety test is becoming a safety risk",
+          "detail": "AI agents are escaping cybersecurity testing environments and reaching real-world systems, raising questions about whether safety infrastructure, industry standards and regulation can keep pace with i"
+        },
+        {
+          "title": "Peer review is overwhelmed—can it survive in the AI era?",
+          "detail": "As research and AI-assisted papers surge, volunteer reviewers struggle to keep up."
+        }
+      ]
+    },
+    {
+      "label": "国内 AI 新闻",
+      "icon": "globe",
+      "accent": "news",
+      "items": [
+        {
+          "title": "AI 大模型周榜：阿里 qwen3.8-max 冲进综合榜 Top 6，国产多模型表现亮眼",
+          "detail": ""
+        },
+        {
+          "title": "月之暗面 Kimi K3 大模型登顶全球榜单后，彭博社称美国 AI 领先中国固有认知被打破",
+          "detail": ""
+        },
+        {
+          "title": "OpenAI 宣布取消 ChatGPT 免费版用户纯文本对话次数限制",
+          "detail": ""
+        },
+        {
+          "title": "消息称智谱 API 用户接近 700 万，已启用超 5 万块国产算力芯片",
+          "detail": ""
+        },
+        {
+          "title": "Meta 开源 30B AI 模型 Muse Glimmer，4bit 量化可在单卡 24GB 显存 GPU 运行",
+          "detail": ""
+        },
+        {
+          "title": "零一万物大模型开放平台将逐步停止面向用户提供在线体验、API 调用及充值等相关服务",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "label": "国际公司动态",
+      "icon": "building",
+      "accent": "company",
+      "items": [
+        {
+          "title": "Hugging Face Blog · Making Knowledge Distillation Cheap Enough to Run at Scale",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · Meta is back with Muse Glimmer: local, agentic, multimodal, and open source",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · TutorMoments: Do AI tutors know when to help and when to hold back?",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · Baseten on Hugging Face Inference Providers 🔥",
+          "detail": ""
+        },
+        {
+          "title": "Hugging Face Blog · Deploy local agents everywhere with LFM2.5-2.6B",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "label": "国内公司动态",
+      "icon": "building",
+      "accent": "company",
+      "items": [
+        {
+          "title": "字节跳动 豆包 · 消息称张一鸣内部下死命令：就算模型暂时落后，字节跳动也不会依赖 AI 蒸馏技术",
+          "detail": ""
+        },
+        {
+          "title": "DeepSeek · DeepSeek：计划近期整体上调 API 服务的定价，预计涨幅较大",
+          "detail": ""
+        },
+        {
+          "title": "DeepSeek · 北京一酒吧上线“不限量免费 Token”服务，到店连接 Wi-Fi 即可畅用 DeepSeek V4 Flash 模型",
+          "detail": ""
+        },
+        {
+          "title": "月之暗面 Moonshot · 月之暗面 Kimi K3 大模型登顶全球榜单后，彭博社称美国 AI 领先中国固有认知被打破",
+          "detail": ""
+        },
+        {
+          "title": "零一万物 · 零一万物大模型开放平台将逐步停止面向用户提供在线体验、API 调用及充值等相关服务",
+          "detail": ""
+        },
+        {
+          "title": "阿里 通义千问 · AI 大模型周榜：阿里 qwen3.8-max 冲进综合榜 Top 6，国产多模型表现亮眼",
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "label": "社区热点",
+      "icon": "message-circle",
+      "accent": "oss",
+      "items": [
+        {
+          "title": "HackerNews Top · OpenAI's letter to Governor Abbott on responsible AI infrastructure in Texas",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Docker Sandboxes – Disposable, isolated sandboxes for AI agents",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Over 181,000 AI meeting recordings left wide open in note taking app",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Mistral Patent for \"Code implemented tool calls\"",
+          "detail": ""
+        },
+        {
+          "title": "HackerNews Top · Mark Zuckerberg attacks 'closed' AI rivals as Meta returns to open models",
+          "detail": ""
+        }
+      ]
+    }
+  ]
+}

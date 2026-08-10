@@ -5,19 +5,33 @@ AI 日报生产者 — 过滤精炼 + JSON 输出
 流程: 原始日报 → 精炼版 Markdown → 结构化 JSON
 
 用法:
-  python3 produce_news.py                           # 今天
-  python3 produce_news.py --date 2026-06-13         # 指定日期
+  python3 produce_news.py                 # 读取 output/ai_news.md，滚动覆盖输出
+  python3 produce_news.py --date 2026-08-10  # 用指定日期写入 JSON 元数据
 """
 
 import os, re, sys, json, datetime, glob
 from pathlib import Path
 
-SCRIPT_DIR = Path(__file__).parent
-OUTPUT_DIR = SCRIPT_DIR / "output"
+from paths import (
+    SCRIPT_DIR,
+    OUTPUT_DIR,
+    RAW_MD_PATH,
+    REFINED_MD_PATH,
+    NEWS_JSON_PATH,
+    ensure_output_dir,
+    cleanup_dated_artifacts,
+)
 
 
 def today_str():
     return datetime.date.today().strftime("%Y-%m-%d")
+
+
+def _date_from_raw(text, fallback=None):
+    m = re.search(r"AI 行业日报\s*[-—]\s*(\d{4}-\d{2}-\d{2})", text)
+    if m:
+        return m.group(1)
+    return fallback or today_str()
 
 
 # ================================================================
@@ -25,19 +39,20 @@ def today_str():
 # ================================================================
 
 def find_source(date_str=None):
-    ds = date_str or today_str()
+    """优先读滚动文件 output/ai_news.md；兼容旧的日期文件名。"""
+    if RAW_MD_PATH.exists():
+        text = RAW_MD_PATH.read_text(encoding="utf-8")
+        return str(RAW_MD_PATH), _date_from_raw(text, date_str)
 
-    # 先在 output/ 里找
+    ds = date_str or today_str()
     out_path = OUTPUT_DIR / f"{ds}_ai_news.md"
     if out_path.exists():
         return str(out_path), ds
 
-    # 也在项目根目录找（兼容之前存的）
     local_path = SCRIPT_DIR / f"{ds}_ai_news.md"
     if local_path.exists():
         return str(local_path), ds
 
-    # fallback: 最近的文件
     candidates = sorted(
         glob.glob(str(OUTPUT_DIR / "*_ai_news.md")) +
         glob.glob(str(SCRIPT_DIR / "*_ai_news.md")),
@@ -163,6 +178,15 @@ _STALE_PATTERNS = [
 
 MAX_AGE_DAYS = 7
 
+# ── 主题过滤：游戏 / 明显非 AI 噪声 ──
+_OFFTOPIC_PATTERNS = [
+    re.compile(r"游戏|手游|网游|电竞|游戏联动"),
+    re.compile(r"米哈游|无畏契约|原神|王者荣耀|和平精英"),
+    re.compile(r"\bgaming\b|\bvideogame\b|\besport", re.IGNORECASE),
+    re.compile(r"酒店订单|opens in a new window|IT早报"),
+    re.compile(r"^\s*官网\s*$"),
+]
+
 
 def _extract_item_date(text):
     """从条目文本中提取日期，返回 datetime.date 或 None。"""
@@ -182,6 +206,16 @@ def _extract_item_date(text):
         except ValueError:
             pass
 
+    # 3. 中文早报日期：IT早报 0808 / 早报0808（用报告年份推断）
+    m = re.search(r"(?:IT)?早报\s*(\d{2})(\d{2})", text)
+    if m and hasattr(_extract_item_date, "_report_year"):
+        try:
+            return datetime.date(
+                _extract_item_date._report_year, int(m.group(1)), int(m.group(2))
+            )
+        except ValueError:
+            pass
+
     # 注意: 不从 arXiv ID (如 2606.XXXXX) 提取日期，
     # 因为只有月份精度，会导致同月论文被误判为过期。
     # 没有精确日期的条目默认保留。
@@ -195,6 +229,7 @@ def _is_stale(text, report_date_str=None):
     if report_date_str:
         try:
             report_date = datetime.date.fromisoformat(report_date_str)
+            _extract_item_date._report_year = report_date.year
             item_date = _extract_item_date(text)
             if item_date:
                 age = (report_date - item_date).days
@@ -204,6 +239,33 @@ def _is_stale(text, report_date_str=None):
 
     # 无日期 → 关键词兜底
     return any(p.search(text) for p in _STALE_PATTERNS)
+
+
+# 短英文词加词边界，避免 Tail/email 误命中 ai
+_AI_TOPIC_RE = re.compile(
+    r"(?<![a-z0-9])(?:ai|aigc|llm|gpt|glm|rag|mlx|nlp|cv)(?![a-z0-9])|"
+    r"claude|gemini|openai|anthropic|deepseek|qwen|kimi|mistral|llama|agent|"
+    r"大模型|人工智能|机器学习|深度学习|智能体|生成式|"
+    r"huggingface|pytorch|transformer|copilot|vllm|ollama|"
+    r"多模态|蒸馏|对齐|强化学习|neural|diffusion",
+    re.IGNORECASE,
+)
+
+
+def _is_offtopic(text):
+    """游戏相关或明显非 AI 展示噪声。"""
+    if any(p.search(text) for p in _OFFTOPIC_PATTERNS):
+        return True
+    # 论坛灌水/长独白（少数派等偶发混入）
+    plain = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    plain = re.sub(r"^###\s*\d+\.\s*", "", plain).strip()
+    if len(plain) > 90 and ("我是" in plain[:30] or plain.startswith("[")):
+        return True
+    return False
+
+
+def _is_ai_topic(text):
+    return bool(_AI_TOPIC_RE.search(text or ""))
 
 def refined_to_json(refined_text, date_str):
     """从精炼版 Markdown 解析为结构化 JSON。"""
@@ -250,6 +312,9 @@ def refined_to_json(refined_text, date_str):
         cfg = match_section(header)
         if not cfg:
             continue
+
+        # 社区 / GitHub 板块强制 AI 主题（源站首页易混入无关内容）
+        require_ai = cfg.get("accent") in {"oss", "github"}
 
         # 按 ### 分组为条目，整条做日期检查
         entries = []
@@ -312,6 +377,10 @@ def refined_to_json(refined_text, date_str):
                 sub_text = sub.group(1).strip()
                 # ### 1. [title](url) → 编号条目（论文/新闻/GitHub）
                 if re.match(r"^\d+\.", sub_text):
+                    if _is_offtopic(entry_text):
+                        continue
+                    if require_ai and not _is_ai_topic(entry_text):
+                        continue
                     title = clean_md(sub_text)
                     detail = ""
                     for line in entry[1:]:
@@ -325,10 +394,14 @@ def refined_to_json(refined_text, date_str):
                         items.append({"title": title[:120], "detail": detail})
                 else:
                     # ### 分类标题（如 OpenAI、HackerNews Top）
-                    # 下方每个链接/编号都是一个独立条目
+                    # 下方每个链接/编号都是一个独立条目（按行过滤）
                     cat = clean_md(sub_text)
                     for line in entry[1:]:
                         if is_meta(line):
+                            continue
+                        if _is_offtopic(line):
+                            continue
+                        if require_ai and not _is_ai_topic(line):
                             continue
                         clean = clean_md(line)
                         clean = re.sub(r"^(?:-|•|\d+\.)\s+", "", clean)
@@ -337,6 +410,10 @@ def refined_to_json(refined_text, date_str):
                             items.append({"title": full_title[:120], "detail": ""})
             else:
                 # 无 ### 结构，用第一行做 title
+                if _is_offtopic(entry_text):
+                    continue
+                if require_ai and not _is_ai_topic(entry_text):
+                    continue
                 for line in entry:
                     if is_meta(line):
                         continue
@@ -364,10 +441,10 @@ def refined_to_json(refined_text, date_str):
 def main():
     import argparse
     p = argparse.ArgumentParser(description="AI 日报精炼 → Markdown + JSON")
-    p.add_argument("--date", help="日期 YYYY-MM-DD")
+    p.add_argument("--date", help="覆盖写入 JSON 的日期 YYYY-MM-DD（默认从原文提取）")
     args = p.parse_args()
 
-    os.makedirs(str(OUTPUT_DIR), exist_ok=True)
+    ensure_output_dir()
 
     # 1. 读取源文件
     src_path, date_str = find_source(args.date)
@@ -375,30 +452,36 @@ def main():
         print("❌ 未找到日报文件，请先运行: python3 ai_news_aggregator.py")
         return
 
+    if args.date:
+        date_str = args.date
+
     with open(src_path, "r", encoding="utf-8") as f:
         raw = f.read()
 
     print(f"📄 读取: {os.path.basename(src_path)} — {len(raw):,} chars")
 
-    # 2. 精炼
+    # 2. 精炼（滚动覆盖）
     print("🔍 精炼中...")
     refined = refine(raw)
 
-    refined_path = OUTPUT_DIR / f"{date_str}_refined.md"
-    refined_path.write_text(refined, encoding="utf-8")
-    print(f"   ✅ refined.md → {refined_path} ({len(refined):,} chars)")
+    REFINED_MD_PATH.write_text(refined, encoding="utf-8")
+    print(f"   ✅ refined.md → {REFINED_MD_PATH} ({len(refined):,} chars)")
 
-    # 3. JSON 输出
+    # 3. JSON 输出（滚动覆盖）
     print("📊 生成 JSON...")
     data = refined_to_json(refined, date_str)
 
-    json_path = OUTPUT_DIR / f"{date_str}_news.json"
-    with open(json_path, "w", encoding="utf-8") as f:
+    with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"   ✅ news.json → {json_path} ({len(data['sections'])} 个板块)")
+    print(f"   ✅ news.json → {NEWS_JSON_PATH} ({len(data['sections'])} 个板块)")
+
+    removed = cleanup_dated_artifacts()
+    if removed:
+        print(f"   🧹 已清理旧日期产物: {len(removed)} 个")
 
     # 4. 输出概要
     print(f"\n{'='*55}")
+    print(f"  📅 {date_str} · 滚动单份产物")
     for sec in data["sections"]:
         print(f"  {sec['icon']} {sec['label']}: {len(sec['items'])} 条")
     print(f"{'='*55}")

@@ -2,12 +2,11 @@
 Generate HTML news cards from ai_news refined markdown.
 Creates a 1920×1080 card layout for screenshot/video production.
 
-Input:  ai_new_product/{date}_refined.md
-Output: ai_new_product/{date}_card.html
+Input:  output/refined.md（滚动）
+Output: output/card.html（滚动）
 
 Usage:
-    python generate_html.py                           # auto-detect today's refined
-    python generate_html.py --date 2026-06-13         # specified date
+    python generate_html.py                           # 读 output/refined.md
     python generate_html.py path/to/file.md           # custom file
 """
 
@@ -24,12 +23,19 @@ except ImportError:
     print("[ERROR] Jinja2 not installed. Run: pip install jinja2")
     sys.exit(1)
 
+from paths import (
+    REFINED_MD_PATH,
+    CARD_HTML_PATH,
+    RAW_MD_PATH,
+    NEWS_JSON_PATH,
+    OUTPUT_DIR as PROD_DIR,
+    cleanup_dated_artifacts,
+)
+
 # ─── Constants ──────────────────────────────────────────────────────────────
 
 SCRIPT_DIR = Path(__file__).parent
 TEMPLATE_DIR = SCRIPT_DIR / "templates"
-# Try to find ai_new_product relative to project structure
-PROD_DIR = SCRIPT_DIR / "output"
 
 TEMPLATE_NAME = "news_cards.html"
 today_str = date.today().isoformat
@@ -222,25 +228,22 @@ def _date_compact(d: date) -> str:
 
 def generate_html(md_path: Optional[str] = None, output_path: Optional[str] = None) -> Path:
     """Generate HTML news cards from markdown. Returns HTML file path."""
-    # Resolve input
     if md_path:
         md_file = Path(md_path)
+    elif REFINED_MD_PATH.exists():
+        md_file = REFINED_MD_PATH
+    elif RAW_MD_PATH.exists():
+        md_file = RAW_MD_PATH
     else:
-        # Auto-detect today's refined.md from ai_new_product
-        td = date.today().isoformat()
-        md_file = PROD_DIR / f"{td}_refined.md"
-        if not md_file.exists():
-            # fallback to raw
-            md_file = SCRIPT_DIR / f"{td}_ai_news.md"
+        md_file = REFINED_MD_PATH
 
     if not md_file.exists():
-        print(f"[ERROR] 未找到精炼版文件，请先运行: python3 produce_news.py")
-        print(f"  查找路径: {md_file}")
+        print("[ERROR] 未找到精炼版文件，请先运行: python3 produce_news.py")
+        print(f"  查找路径: {REFINED_MD_PATH}")
         sys.exit(1)
 
     print(f"[HTML] 读取: {md_file}")
 
-    # Parse
     cards = parse_markdown(md_file)
     if not cards:
         print("[ERROR] 未能从 markdown 解析出任何卡片数据")
@@ -248,15 +251,22 @@ def generate_html(md_path: Optional[str] = None, output_path: Optional[str] = No
 
     print(f"[HTML] 解析到 {len(cards)} 个卡片")
 
-    # Arrange layout
     rows = arrange_cards(cards)
     print(f"[HTML] 布局: {len(rows)} 行 × {max(len(r) for r in rows)} 列")
 
-    # Resolve date from filename
-    date_match = re.search(r"(\d{4}-\d{2}-\d{2})", str(md_file.name))
-    d = date.fromisoformat(date_match.group(1)) if date_match else date.today()
+    d = date.today()
+    if NEWS_JSON_PATH.exists():
+        try:
+            meta = json.loads(NEWS_JSON_PATH.read_text(encoding="utf-8"))
+            if meta.get("date"):
+                d = date.fromisoformat(meta["date"])
+        except (json.JSONDecodeError, ValueError, OSError):
+            pass
+    else:
+        date_match = re.search(r"(\d{4}-\d{2}-\d{2})", str(md_file.name))
+        if date_match:
+            d = date.fromisoformat(date_match.group(1))
 
-    # Render
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template(TEMPLATE_NAME)
     html = template.render(
@@ -265,17 +275,15 @@ def generate_html(md_path: Optional[str] = None, output_path: Optional[str] = No
         rows=rows,
     )
 
-    # Output
-    if output_path:
-        out_file = Path(output_path)
-    else:
-        out_name = f"{d.isoformat()}_card.html"
-        out_file = PROD_DIR / out_name
-
+    out_file = Path(output_path) if output_path else CARD_HTML_PATH
     out_file.parent.mkdir(parents=True, exist_ok=True)
     out_file.write_text(html, encoding="utf-8")
 
-    print(f"[HTML] 已生成: {out_file}")
+    removed = cleanup_dated_artifacts()
+    if removed:
+        print(f"[HTML] 已清理旧日期产物: {len(removed)} 个")
+
+    print(f"[HTML] 已生成（滚动覆盖）: {out_file}")
     return out_file
 
 
@@ -286,9 +294,7 @@ if __name__ == "__main__":
     i = 0
     while i < len(args):
         if args[i] == "--date" and i + 1 < len(args):
-            from datetime import datetime as _dt
-            td = _dt.strptime(args[i+1], "%Y-%m-%d").date().isoformat()
-            md = str(PROD_DIR / f"{td}_refined.md")
+            # 兼容旧参数：忽略，始终用滚动 refined.md
             i += 2
         elif args[i] == "--output" and i + 1 < len(args):
             out = args[i + 1]

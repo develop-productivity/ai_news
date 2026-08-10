@@ -12,7 +12,7 @@ AI News Aggregator v2 - 每日 AI 新闻聚合
   - 各大模型公司博客 (OpenAI, Anthropic, Google, HF, Meta)
   - 国内大模型公司动态 (DeepSeek, 智谱, 百度, 阿里等)
 
-输出: /mnt/d/wsl_data/ai_news/{yyyy-mm-dd}_ai_news.md
+输出: output/ai_news.md（滚动覆盖，不按日期堆积）
 """
 
 import requests
@@ -25,9 +25,16 @@ import datetime
 from xml.etree import ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from paths import (
+    OUTPUT_DIR as OUTPUT_DIR_PATH,
+    RAW_MD_PATH,
+    ensure_output_dir,
+    cleanup_dated_artifacts,
+)
+
 # ============ 配置 ============
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output")
+OUTPUT_DIR = str(OUTPUT_DIR_PATH)
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 REQUESTS_TIMEOUT = 20
 MAX_RETRIES = 2
@@ -73,7 +80,8 @@ def today_str():
 
 
 def output_filename():
-    return os.path.join(OUTPUT_DIR, f"{today_str()}_ai_news.md")
+    """滚动覆盖的固定路径。"""
+    return str(RAW_MD_PATH)
 
 
 def truncate(text, max_len=300):
@@ -89,6 +97,57 @@ def strip_html(text):
     if not text:
         return ""
     return re.sub(r'<[^>]+>', '', text)
+
+
+# ── 主题过滤：屏蔽游戏/噪声，保留 AI 相关 ──
+
+_GAME_BLOCKLIST = [
+    "游戏", "手游", "网游", "电竞", "端游", "主机游戏", "游戏联动",
+    "米哈游", "无畏契约", "原神", "王者荣耀", "和平精英", "崩坏",
+    "steam", "xbox", "playstation", "nintendo", "switch 游戏",
+    "gaming", "videogame", "video game", "esport",
+]
+
+_NOISE_BLOCKLIST = [
+    "酒店订单", "opens in a new window", "it早报",
+    "渠道佣金", "运营商低价", "美瞳广告", "必胜客",
+]
+
+_AI_TOPIC_KEYWORDS = [
+    "ai", "aigc", "llm", "gpt", "claude", "gemini", "openai", "anthropic",
+    "deepseek", "qwen", "kimi", "glm", "mistral", "llama", "agent",
+    "大模型", "人工智能", "机器学习", "深度学习", "神经网络", "多模态",
+    "智能体", "生成式", "transformer", "rag", "embedding", "推理",
+    "huggingface", "pytorch", "tensorflow", "mlx", "cuda", "gpu",
+    "nlp", "cv", "diffusion", "微调", "蒸馏", "对齐", "强化学习",
+    "coding agent", "copilot", "cursor", "vllm", "ollama",
+]
+
+
+def _keyword_hit(text, keyword):
+    """短英文词用词边界，避免 Tail/email 误匹配 ai。"""
+    t = text or ""
+    k = keyword.lower()
+    if re.fullmatch(r"[a-z0-9_+./-]{1,4}", k):
+        return re.search(rf"(?<![a-z0-9]){re.escape(k)}(?![a-z0-9])", t, re.IGNORECASE) is not None
+    return k in t.lower()
+
+
+def _contains_any(text, keywords):
+    return any(_keyword_hit(text, k) for k in keywords)
+
+
+def is_game_or_noise(text):
+    """游戏相关或明显噪声标题。"""
+    return _contains_any(text, _GAME_BLOCKLIST) or _contains_any(text, _NOISE_BLOCKLIST)
+
+
+def is_ai_topic(text, min_hits=1):
+    """粗粒度 AI 主题判断。"""
+    if not text:
+        return False
+    hits = sum(1 for k in _AI_TOPIC_KEYWORDS if _keyword_hit(text, k))
+    return hits >= min_hits
 
 
 # ============ 翻译模块 ============
@@ -248,6 +307,10 @@ def fetch_github_trending():
                     stars_text = a.text.strip().replace(",", "")
                     break
 
+            blob = f"{full_name} {description}"
+            if is_game_or_noise(blob) or not is_ai_topic(blob):
+                continue
+
             repos.append({
                 "name": full_name,
                 "url": f"https://github.com/{full_name}",
@@ -258,7 +321,7 @@ def fetch_github_trending():
         except Exception:
             continue
 
-    print(f"    ✓ {len(repos)} 个仓库")
+    print(f"    ✓ {len(repos)} 个仓库 (已过滤非 AI/游戏)")
     return repos
 
 
@@ -469,7 +532,7 @@ def fetch_international_ai_news():
                 title = item.findtext("title", "").strip()
                 link = item.findtext("link", "").strip()
                 desc = strip_html(item.findtext("description", "") or "").strip()
-                if title and ("AI" in title or "intelligence" in title.lower() or "robot" in title.lower()):
+                if title and is_ai_topic(title) and not is_game_or_noise(title):
                     all_news.append({
                         "source": "Ars Technica", "title": title,
                         "url": link, "summary": truncate(desc, 200),
@@ -486,7 +549,7 @@ def fetch_international_ai_news():
                 title = entry.findtext("title", "").strip()
                 link_el = entry.find("link")
                 url = link_el.get("href", "") if link_el is not None else ""
-                if title and len(title) > 10:
+                if title and len(title) > 10 and not is_game_or_noise(title):
                     all_news.append({
                         "source": "The Verge AI", "title": title,
                         "url": url, "summary": "",
@@ -494,11 +557,14 @@ def fetch_international_ai_news():
     except Exception as e:
         print(f"    [WARN] Verge: {e}")
 
-    # Dedup
+    # Dedup + drop game/noise (TechCrunch AI 分区偶发混入弱相关)
     seen = set()
     unique = []
     for n in all_news:
-        key = n["title"].lower().strip()[:60]
+        title = n.get("title", "")
+        if is_game_or_noise(title):
+            continue
+        key = title.lower().strip()[:60]
         if key not in seen:
             seen.add(key)
             unique.append(n)
@@ -560,6 +626,8 @@ def fetch_chinese_ai_news():
                 if not title or len(title) < 8:
                     continue
                 title = re.sub(r'\s+', ' ', title).strip()
+                if is_game_or_noise(title):
+                    continue
                 score = _ai_relevance_score(title)
                 if score < 2:
                     continue
@@ -588,6 +656,8 @@ def fetch_chinese_ai_news():
                 if not title or len(title) < 8:
                     continue
                 title = re.sub(r'\s+', ' ', title).strip()
+                if is_game_or_noise(title):
+                    continue
                 if not _is_ai_related(title):
                     continue
                 score = _ai_relevance_score(title)
@@ -622,9 +692,14 @@ def fetch_chinese_ai_news():
             for a in soup.find_all("a", href=True):
                 title = a.text.strip()
                 href = a["href"]
-                if not title or len(title) < 8:
+                if not title or len(title) < 8 or len(title) > 80:
                     continue
                 title = re.sub(r'\s+', ' ', title).strip()
+                # 过滤论坛灌水/长独白
+                if title.startswith("[") or "我是" in title[:20]:
+                    continue
+                if is_game_or_noise(title):
+                    continue
                 if _ai_relevance_score(title) < 2:
                     continue
                 url = href if href.startswith("http") else "https://sspai.com" + href
@@ -640,10 +715,13 @@ def fetch_chinese_ai_news():
     seen = set()
     unique = []
     for n in all_news:
-        key = n["title"].lower().strip()[:40]
+        title = n.get("title", "")
+        if is_game_or_noise(title):
+            continue
+        key = title.lower().strip()[:40]
         if key not in seen:
             seen.add(key)
-            score = n.get("_score", 0) or _ai_relevance_score(n["title"])
+            score = n.get("_score", 0) or _ai_relevance_score(title)
             n["_score"] = score
             unique.append(n)
 
@@ -688,14 +766,26 @@ def fetch_international_company_news():
             soup = safe_parse_html(oa.text)
             if soup:
                 for a in soup.find_all("a", href=True):
-                    title = a.text.strip()
+                    title = re.sub(r'\s+', ' ', a.text.strip())
                     href = a["href"]
-                    if title and len(title) > 20 and "https" in href:
-                        news.append({"source": "OpenAI", "title": title, "url": href if href.startswith("http") else "https://openai.com" + href})
-                        break  # just get first meaningful link
+                    if not title or len(title) < 20 or len(title) > 120:
+                        continue
+                    if "opens in a new window" in title.lower():
+                        continue
+                    if is_game_or_noise(title):
+                        continue
+                    if "/news/" not in href and "openai.com" not in href:
+                        continue
+                    news.append({
+                        "source": "OpenAI",
+                        "title": title,
+                        "url": href if href.startswith("http") else "https://openai.com" + href,
+                    })
+                    break
     except Exception:
         pass
 
+    news = [n for n in news if not is_game_or_noise(n.get("title", ""))]
     print(f"    ✓ 国际公司动态共计 {len(news)} 条")
     return news[:12]
 
@@ -736,6 +826,12 @@ def fetch_chinese_company_news():
                 title = re.sub(r'\s+', ' ', title).strip()
                 url = href if href.startswith("http") else "https://ithome.com" + href
 
+                if is_game_or_noise(title):
+                    continue
+                # 公司名命中还不够：必须同时是 AI 话题（避免腾讯手游、豆包酒店等）
+                if not is_ai_topic(title):
+                    continue
+
                 for comp_name, keywords in companies.items():
                     if any(k.lower() in title.lower() for k in keywords):
                         if comp_name not in company_articles:
@@ -763,33 +859,10 @@ def fetch_chinese_company_news():
     except Exception as e:
         print(f"    [WARN] 公司新闻爬取: {e}")
 
-    # 对于没有找到新闻的公司，补充官网信息
-    found_companies = set(n["source"] for n in news)
-    all_company_names = set(c[0] for c in companies.items())
-    missing = all_company_names - found_companies
-
+    # 无新闻的公司不再填充「官网」占位（无时效、无信息量）
+    missing = set(companies) - set(n["source"] for n in news)
     if missing:
-        print(f"    [补充] 为以下公司补充官网信息: {', '.join(missing)}")
-        company_urls = {
-            "DeepSeek": "https://www.deepseek.com/",
-            "智谱AI": "https://www.zhipuai.cn/",
-            "百度 文心一言": "https://yiyan.baidu.com/",
-            "阿里 通义千问": "https://tongyi.aliyun.com/",
-            "月之暗面 Moonshot": "https://www.moonshot.cn/",
-            "腾讯 混元": "https://hunyuantech.com/",
-            "字节跳动 豆包": "https://www.doubao.com/",
-            "MiniMax": "https://www.minimaxi.com/",
-            "零一万物": "https://www.yi.ai/",
-            "百川智能": "https://www.baichuan-ai.com/",
-        }
-        for name in missing:
-            url = company_urls.get(name, "")
-            if url:
-                news.append({
-                    "source": name,
-                    "title": "官网",
-                    "url": url,
-                })
+        print(f"    [跳过] 今日无 AI 相关动态: {', '.join(sorted(missing))}")
 
     print(f"    ✓ 国内公司动态共计 {len(news)} 条")
     return news[:15]
@@ -815,7 +888,7 @@ def fetch_community_highlights():
                         title = data.get("title", "")
                         url = data.get("url", "") or f"https://news.ycombinator.com/item?id={story_id}"
                         score = data.get("score", 0)
-                        if title:
+                        if title and is_ai_topic(title) and not is_game_or_noise(title):
                             highlights.append({
                                 "title": title,
                                 "url": url,
@@ -824,7 +897,7 @@ def fetch_community_highlights():
                             })
                 except Exception:
                     continue
-        print(f"    ✓ HackerNews: {len(highlights)} 条")
+        print(f"    ✓ HackerNews: {len(highlights)} 条 (AI 过滤后)")
     except Exception as e:
         print(f"    [WARN] HN: {e}")
 
@@ -835,7 +908,7 @@ def fetch_community_highlights():
             for item in lob.json()[:5]:
                 title = item.get("title", "")
                 url = item.get("url", "") or f"https://lobste.rs/s/{item.get('short_id', '')}"
-                if title:
+                if title and is_ai_topic(title) and not is_game_or_noise(title):
                     highlights.append({
                         "title": title,
                         "url": url,
@@ -1118,7 +1191,7 @@ def main():
     print(f"  AI News Aggregator v2 - {today_str()}")
     print(f"{'='*60}\n")
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    ensure_output_dir()
 
     # Load HF_TOKEN from .env if available
     env_file = os.path.join(OUTPUT_DIR, ".env")
@@ -1173,15 +1246,19 @@ def main():
         community=results.get("community", []),
     )
 
-    # Write file
+    # Write file（滚动覆盖）
     filename = output_filename()
     with open(filename, "w", encoding="utf-8") as f:
         f.write(report)
 
+    removed = cleanup_dated_artifacts()
+    if removed:
+        print(f"  🧹 已清理旧日期产物: {len(removed)} 个")
+
     elapsed = time.time() - start
     size = os.path.getsize(filename)
 
-    print(f"\n{'✅'} 报告已生成!")
+    print(f"\n{'✅'} 报告已生成（滚动覆盖）!")
     print(f"  📁 {filename}")
     print(f"  📏 {size:,} bytes | ⏱ {elapsed:.1f}s\n")
 
