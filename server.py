@@ -54,13 +54,24 @@ def load_news(date_str=None):
 
 
 def load_cards():
-    """加载滚动 card.html。"""
+    """加载滚动 card.html；若无文件则用 news.json 即时渲染。"""
     if CARD_HTML_PATH.exists():
         return CARD_HTML_PATH.read_text(encoding="utf-8")
     legacy = sorted(OUTPUT_DIR.glob("*_card.html"), reverse=True)
     if legacy:
         return legacy[0].read_text(encoding="utf-8")
-    return None
+
+    # pull 后通常只有 news.json：即时从 JSON 渲染，避免空白
+    data = load_news()
+    if not data:
+        return None
+    try:
+        from generate_html import html_from_news_json
+        html = html_from_news_json(data)
+        return html or None
+    except Exception as e:
+        print(f"[WARN] cards render from news.json failed: {e}")
+        return None
 
 
 @app.get("/api/v1/ai_news/news")

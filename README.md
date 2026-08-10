@@ -137,8 +137,28 @@ NEXT_PUBLIC_AI_NEWS_API=http://localhost:8001 npx next dev
 |------|------|
 | Python | `requirements.txt`（fastapi / uvicorn / requests / bs4 / jinja2） |
 | 运行时数据 | `output/news.json`（仓库可带一份种子；日常由定时任务覆盖） |
-| 前端 | 仅 HTTP GET `/api/v1/ai_news/news`，无本地文件依赖 |
+| 前端页面 | **React 运行时请求** `GET /api/v1/ai_news/news`，不是读仓库里的 HTML 静态文件 |
+| `/cards` | 可选；无 `card.html` 时会用 `news.json` 即时渲染 |
 | 系统 | systemd + nginx 反代 `/api/v1/ai_news/` → `127.0.0.1:8001` |
+
+### pull 后页面空白？
+
+网站 HTML 壳在 **zero-to-tech**，日报内容来自 **ai_news API**。只 pull `ai_news` 不够，需确认：
+
+```bash
+# 1) 数据在
+ls output/news.json
+
+# 2) API 在跑（改代码后要重启）
+sudo systemctl restart ai-news-api   # 或你的服务名
+curl -s http://127.0.0.1:8001/api/v1/ai_news/news | head
+
+# 3) nginx 把 /api/v1/ai_news/ 转到 8001
+curl -s https://你的域名/api/v1/ai_news/news | head
+
+# 4) 可选：生成静态卡片页
+.venv/bin/python generate_html.py    # 现在可只凭 news.json 生成
+```
 
 ### 1. 安装
 
