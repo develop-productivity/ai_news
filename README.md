@@ -65,7 +65,7 @@ ai_news_aggregator.py     produce_news.py      server.py
 
 ## API 接口
 
-部署依赖：**运行时读取 `output/news.json`**。前端（zero-to-tech `AiNewsView.jsx`）只请求：
+部署依赖：**运行时读取 `output/news.json`**。前端（`AiNewsView.jsx`，挂在 `/demos/ai-news`）只请求：
 
 `GET /api/v1/ai_news/news`（不带 date）
 
@@ -122,10 +122,17 @@ python3 server.py
 前端：
 
 ```bash
-NEXT_PUBLIC_AI_NEWS_API=http://localhost:8001 npx next dev
+cd zero-to-tech/nextjs
+# .env.local
+NEXT_PUBLIC_AI_NEWS_API=http://localhost:8001
+npm run dev
+# 打开 http://localhost:3000/demos/ai-news
 ```
 
-生产环境 `AiNewsView` 默认同源请求 `/api/v1/ai_news/news`，由 nginx 转到 8001。
+生产环境常见两种接法：
+
+1. **同源反代**：站点 nginx 把 `/api/v1/ai_news/` 转到 `127.0.0.1:8001`，此时可不设 `NEXT_PUBLIC_AI_NEWS_API`（前端默认相对路径）。
+2. **直连 API 域名**：设置 `NEXT_PUBLIC_AI_NEWS_API=https://api.example.com`，并在 `server.py` 侧放行 CORS。
 
 ---
 
@@ -140,10 +147,6 @@ NEXT_PUBLIC_AI_NEWS_API=http://localhost:8001 npx next dev
 | 前端页面 | **React 运行时请求** `GET /api/v1/ai_news/news`，不是读仓库里的 HTML 静态文件 |
 | `/cards` | 可选；无 `card.html` 时会用 `news.json` 即时渲染 |
 | 系统 | systemd + nginx 反代 `/api/v1/ai_news/` → `127.0.0.1:8001` |
-
-### pull 后页面空白？
-
-网站 HTML 壳在 **zero-to-tech**，日报内容来自 **ai_news API**。只 pull `ai_news` 不够，需确认：
 
 ```bash
 # 1) 数据在
