@@ -108,6 +108,18 @@ def list_dates():
     return {"dates": [d] if d else [], "latest": d}
 
 
+@app.get("/", response_class=HTMLResponse)
+def index():
+    """根路径直接返回 HTML 卡片，方便浏览器预览。"""
+    html = load_cards()
+    if not html:
+        return HTMLResponse(
+            "<p style='padding:2rem;color:#888'>暂无数据，请先运行 produce_news.py</p>",
+            status_code=404,
+        )
+    return HTMLResponse(html)
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="AI Daily News API server")
     p.add_argument("--port", type=int, default=8001, help="Listen port")
@@ -124,6 +136,7 @@ if __name__ == "__main__":
     print("  🔗 /api/v1/ai_news/news   — 结构化日报 JSON")
     print("  🔗 /api/v1/ai_news/cards  — 渲染好的 HTML 卡片")
     print("  🔗 /api/v1/ai_news/dates  — 当前日期")
+    print("  🔗 /                    — 浏览器预览（HTML 卡片）")
     print("=" * 50)
 
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")
