@@ -16,8 +16,9 @@ AI 日报 API + 独立网站
 
 import json
 import argparse
+import datetime
+import hashlib
 from pathlib import Path
-from urllib.parse import quote
 
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -47,12 +48,94 @@ if STATIC_DIR.exists():
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 
 
+def _parse_time(value):
+    if not value:
+        return None
+    try:
+        t = datetime.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return t if t.tzinfo else t.replace(tzinfo=datetime.timezone.utc)
+
+
+def ago(value):
+    """ISO 时间 → “3 小时前”。"""
+    t = _parse_time(value)
+    if not t:
+        return ""
+    secs = (datetime.datetime.now(datetime.timezone.utc) - t).total_seconds()
+    if secs < 3600:
+        return f"{max(1, int(secs // 60))} 分钟前"
+    if secs < 86400:
+        return f"{int(secs // 3600)} 小时前"
+    if secs < 86400 * 30:
+        return f"{int(secs // 86400)} 天前"
+    return t.strftime("%Y-%m-%d")
+
+
+def safe_url(value):
+    """只放行 http(s) 链接，防止 javascript: 之类注入。"""
+    v = (value or "").strip()
+    return v if v.startswith(("http://", "https://")) else ""
+
+
+templates.env.filters["ago"] = ago
+templates.env.filters["safe_url"] = safe_url
+
+
+def normalize(data):
+    """给旧快照补齐 id 等字段，保证前端可以按 id 打开详情。"""
+    if not data:
+        return data
+    for sec in data.get("sections", []):
+        for item in sec.get("items", []):
+            if not item.get("id"):
+                key = (item.get("url") or item.get("title_original") or item.get("title") or "").strip().lower()
+                item["id"] = hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
+            item["url"] = safe_url(item.get("url"))
+            item.setdefault("source", "")
+    return data
+
+
+def build_payload(data):
+    """页面内嵌给前端详情弹窗用的数据：{items: {id: item}, sections: {...}}。"""
+    items, sections = {}, {}
+    for sec in (data or {}).get("sections", []):
+        if sec.get("accent") == "hot":
+            continue
+        key = sec.get("key") or sec.get("label")
+        ids = []
+        for item in sec.get("items", []):
+            entry = dict(item)
+            entry["section"] = sec.get("label", "")
+            entry["accent"] = sec.get("accent", "")
+            entry["published_ago"] = ago(item.get("published_at"))
+            items[item["id"]] = entry
+            ids.append(item["id"])
+        sections[key] = {"label": sec.get("label", ""), "icon": sec.get("icon", ""),
+                         "accent": sec.get("accent", ""), "ids": ids}
+    # 热门条目若在原板块被裁掉，也要能打开
+    for sec in (data or {}).get("sections", []):
+        if sec.get("accent") == "hot":
+            for item in sec.get("items", []):
+                if item["id"] not in items:
+                    entry = dict(item)
+                    entry["section"] = item.get("source_section", "")
+                    entry["published_ago"] = ago(item.get("published_at"))
+                    items[item["id"]] = entry
+    return {"items": items, "sections": sections}
+
+
 def _legacy_news_path():
     candidates = sorted(OUTPUT_DIR.glob("*_news.json"), reverse=True)
     return candidates[0] if candidates else None
 
 
 def load_news(date_str=None):
+    return normalize(_load_news(date_str))
+
+
+def _load_news(date_str=None):
     """加载新闻数据：优先 news.json，回退到历史数据库。"""
     path = NEWS_JSON_PATH if NEWS_JSON_PATH.exists() else _legacy_news_path()
     if path and path.exists():
@@ -119,6 +202,7 @@ def home(request: Request):
     data = load_news()
     return templates.TemplateResponse(request, "site/index.html", {
         "data": data or {"sections": []},
+        "payload": build_payload(data),
         "active": "home",
     })
 
@@ -130,6 +214,7 @@ def hot(request: Request):
     return templates.TemplateResponse(request, "site/hot.html", {
         "items": items,
         "data": data,
+        "payload": build_payload(data),
         "active": "hot",
     })
 
@@ -153,6 +238,7 @@ def archive(request: Request, date_str: str):
     data = load_news(date_str)
     return templates.TemplateResponse(request, "site/archive.html", {
         "data": data or {"sections": [], "date": date_str, "date_formatted": date_str, "weekday": ""},
+        "payload": build_payload(data),
         "active": "archive",
     })
 
@@ -160,8 +246,14 @@ def archive(request: Request, date_str: str):
 @app.get("/about", response_class=HTMLResponse)
 def about(request: Request):
     data = load_news()
+    try:
+        from history import list_source_status
+        sources = list_source_status()
+    except Exception:
+        sources = []
     return templates.TemplateResponse(request, "site/about.html", {
         "data": data,
+        "sources": sources,
         "active": "about",
     })
 
@@ -225,6 +317,15 @@ def get_history(limit: int = Query(default=30)):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
+@app.get("/api/v1/ai_news/sources")
+def get_sources():
+    try:
+        from history import list_source_status
+        return {"sources": list_source_status()}
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
 @app.get("/api/v1/ai_news/search")
 def search(q: str = Query(default="", description="搜索关键词"), limit: int = Query(default=20)):
     if not q:
@@ -250,6 +351,6 @@ if __name__ == "__main__":
     print(f"  📡 http://{args.host}:{args.port}")
     print(f"  📅 当前滚动数据: {latest or '暂无'}")
     print("  🌐 /  /hot  /history  /archive/<date>  /about")
-    print("  🔗 /api/v1/ai_news/news | hot | cards | dates | history | search")
+    print("  🔗 /api/v1/ai_news/news | hot | cards | dates | history | search | sources")
     print("=" * 50)
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")

@@ -1,0 +1,25 @@
+{
+  "$comment": "RSS 信源配置。前 18 个来自 AIHOT industry/sources.json；section 决定条目进入哪个板块，tier 决定精选门槛 (T1=60, T1.5=65, T2=76)。max_age_hours 超出的条目视为过期。",
+  "tier_thresholds": { "T1": 60, "T1.5": 65, "T2": 76, "default": 65 },
+  "sources": [
+    { "id": "rss-openai-news", "name": "OpenAI", "type": "rss", "url": "https://openai.com/news/rss.xml", "tier": "T1", "section": "intl_company", "tags": ["官方"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-google-deepmind", "name": "Google DeepMind", "type": "rss", "url": "https://deepmind.google/blog/rss.xml", "tier": "T1", "section": "intl_company", "tags": ["官方"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-google-research", "name": "Google Research", "type": "rss", "url": "https://research.google/blog/rss/", "tier": "T1", "section": "intl_company", "tags": ["官方", "研究"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-hugging-face", "name": "Hugging Face", "type": "rss", "url": "https://huggingface.co/blog/feed.xml", "tier": "T1", "section": "intl_company", "tags": ["官方", "开源"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-microsoft-research", "name": "Microsoft Research", "type": "rss", "url": "https://www.microsoft.com/en-us/research/feed/", "tier": "T1", "section": "intl_company", "tags": ["官方", "研究"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-nvidia-blog", "name": "NVIDIA", "type": "rss", "url": "https://blogs.nvidia.com/feed/", "tier": "T1", "section": "intl_company", "tags": ["官方"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-aws-ml", "name": "AWS ML", "type": "rss", "url": "https://aws.amazon.com/blogs/machine-learning/feed/", "tier": "T1", "section": "intl_company", "tags": ["官方", "教程"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-github-ai", "name": "GitHub Blog", "type": "rss", "url": "https://github.blog/ai-and-ml/feed/", "tier": "T1", "section": "intl_company", "tags": ["官方"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-mistral", "name": "Mistral AI", "type": "rss", "url": "https://mistral.ai/news/rss", "tier": "T1", "section": "intl_company", "tags": ["官方"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-bair", "name": "BAIR", "type": "rss", "url": "https://bair.berkeley.edu/blog/feed.xml", "tier": "T1", "section": "intl_company", "tags": ["研究"], "interval_minutes": 180, "max_age_hours": 336, "enabled": true },
+    { "id": "rss-the-verge-ai", "name": "The Verge", "type": "rss", "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", "tier": "T2", "section": "intl_news", "tags": ["媒体"], "interval_minutes": 60, "enabled": true },
+    { "id": "rss-techcrunch-ai", "name": "TechCrunch", "type": "rss", "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "tier": "T2", "section": "intl_news", "tags": ["媒体"], "interval_minutes": 60, "enabled": true },
+    { "id": "rss-ars-technica-ai", "name": "Ars Technica", "type": "rss", "url": "https://arstechnica.com/ai/feed/", "tier": "T2", "section": "intl_news", "tags": ["媒体"], "interval_minutes": 60, "enabled": true },
+    { "id": "rss-mit-tech-review-ai", "name": "MIT Tech Review", "type": "rss", "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed", "tier": "T2", "section": "intl_news", "tags": ["媒体"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-the-decoder", "name": "The Decoder", "type": "rss", "url": "https://the-decoder.com/feed/", "tier": "T2", "section": "intl_news", "tags": ["媒体"], "interval_minutes": 60, "enabled": true },
+    { "id": "rss-simon-willison", "name": "Simon Willison", "type": "rss", "url": "https://simonwillison.net/atom/everything/", "tier": "T2", "section": "intl_news", "tags": ["个人"], "interval_minutes": 120, "enabled": true },
+    { "id": "rss-import-ai", "name": "Import AI", "type": "rss", "url": "https://importai.substack.com/feed", "tier": "T2", "section": "intl_news", "tags": ["个人", "周刊"], "interval_minutes": 180, "max_age_hours": 168, "enabled": true },
+    { "id": "rss-latent-space", "name": "Latent Space", "type": "rss", "url": "https://www.latent.space/feed", "tier": "T2", "section": "intl_news", "tags": ["个人"], "interval_minutes": 180, "max_age_hours": 168, "enabled": true },
+    { "id": "rss-anthropic", "name": "Anthropic", "type": "rss", "url": "https://www.anthropic.com/feed.xml", "tier": "T1", "section": "intl_company", "tags": ["官方"], "interval_minutes": 120, "enabled": false, "note": "官方无 RSS (404)" }
+  ]
+}

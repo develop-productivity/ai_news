@@ -1,0 +1,116 @@
+{# 共享组件：新闻卡片 / 板块卡片 / 事件行。
+   约定：整张卡片点击 → 放大为详情弹窗；标题链接 → 直接打开原文（新标签页）。 #}
+
+{% macro icon(name) -%}
+{% if name == 'star' %}★{% elif name == 'diamond' %}◆{% elif name == 'building' %}■{% elif name == 'globe' %}●{% elif name == 'message-circle' %}○{% elif name == 'flame' %}🔥{% else %}●{% endif %}
+{%- endmacro %}
+
+{% macro score_badge(score) -%}
+{% if score %}<span class="score-badge band-{{ 'a' if score >= 85 else 'b' if score >= 70 else 'c' if score >= 50 else 'd' }}" title="LLM 评分">{{ score }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro meta_line(item, show_section=false) -%}
+<div class="nc-meta">
+  {% if item.tier %}<span class="tier-badge tier-{{ item.tier | lower | replace('.', '') }}" title="{{ '官方一手信源' if item.tier == 'T1' else '媒体 / 个人信源' }}">{{ item.tier }}</span>{% endif %}
+  {% if item.source %}<span class="nc-source">{{ item.source }}</span>{% endif %}
+  {% if show_section and item.source_section %}<span class="nc-section">{{ item.source_section }}</span>{% endif %}
+  {% if item.published_at and item.published_at | ago %}<time class="nc-time" datetime="{{ item.published_at }}">{{ item.published_at | ago }}</time>{% endif %}
+  <span class="nc-spacer"></span>
+  {% if item.selected %}<span class="pick-badge" title="达到信源层级的精选门槛">精选</span>{% endif %}
+  {{ score_badge(item.score) }}
+</div>
+{%- endmacro %}
+
+{% macro title_link(item, cls='nc-title-link') -%}
+{% set href = item.url | safe_url %}
+{% if href %}<a class="{{ cls }}" href="{{ href }}" target="_blank" rel="noopener noreferrer">{{ item.title }}<span class="ext" aria-hidden="true">↗</span></a>{% else %}<span class="{{ cls }}">{{ item.title }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro news_card(item, variant='', show_section=false) -%}
+<article class="news-card {{ variant }}" data-open-item="{{ item.id }}" tabindex="0" aria-label="查看详情：{{ item.title }}">
+  {{ meta_line(item, show_section) }}
+  <h3 class="nc-title">{{ title_link(item) }}</h3>
+  {% if item.detail %}<p class="nc-detail">{{ item.detail }}</p>{% endif %}
+  {% if item.related %}<div class="nc-related">另有 {{ item.related | length }} 家报道</div>{% endif %}
+</article>
+{%- endmacro %}
+
+{% macro section_card(sec, preview=5) -%}
+<section class="section-card accent-{{ sec.accent }}" data-open-section="{{ sec.key or sec.label }}" tabindex="0" aria-label="展开板块：{{ sec.label }}">
+  <div class="section-card-accent"></div>
+  <header class="section-card-header">
+    <span class="section-card-icon">{{ icon(sec.icon) }}</span>
+    <h2 class="section-card-title">{{ sec.label }}</h2>
+    <span class="section-card-count">{{ sec['items'] | length }}</span>
+    <span class="section-card-expand" aria-hidden="true">⤢</span>
+  </header>
+  <ul class="section-card-body">
+    {% for item in sec['items'][:preview] %}
+    <li class="section-item" data-open-item="{{ item.id }}">
+      <span class="section-item-dot"></span>
+      <span class="section-item-main">
+        <span class="section-item-text">{{ item.title }}</span>
+        <span class="section-item-sub">{{ item.source }}{% if item.published_at and item.published_at | ago %} · {{ item.published_at | ago }}{% endif %}</span>
+      </span>
+      {{ score_badge(item.score) }}
+      {% set href = item.url | safe_url %}
+      {% if href %}<a class="section-item-link" href="{{ href }}" target="_blank" rel="noopener noreferrer" title="打开原文" aria-label="打开原文">↗</a>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% if sec['items'] | length > preview %}
+  <div class="section-item-more">查看全部 {{ sec['items'] | length }} 条 →</div>
+  {% endif %}
+</section>
+{%- endmacro %}
+
+{% macro event_row(ev) -%}
+<div class="event-item" {% if ev.id %}data-open-item="{{ ev.id }}"{% endif %} tabindex="0">
+  <div class="event-badge">{{ ev.source_count }} 源</div>
+  <div class="event-content">
+    <div class="event-title">{{ ev.title }}</div>
+    <div class="event-sources">
+      {% for src in ev.sources %}
+      {% set href = src.url | safe_url %}
+      {% if href %}<a class="event-source-tag" href="{{ href }}" target="_blank" rel="noopener noreferrer">{{ src.source or src.section }} ↗</a>
+      {% else %}<span class="event-source-tag">{{ src.source or src.section }}</span>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {{ score_badge(ev.score) }}
+</div>
+{%- endmacro %}
+
+{% macro daily(data) -%}
+{% if not data or not data.sections %}
+<div class="empty-state">
+  <h2>暂无数据</h2>
+  <p>请先运行: python3 ai_news_aggregator.py → python3 produce_news.py</p>
+</div>
+{% else %}
+  {% if data.sections[0].accent == 'hot' %}
+  <section class="block">
+    <h2 class="block-title">🔥 今日热门 <span class="block-hint">点击卡片看详情，点击标题直达原文</span></h2>
+    <div class="hot-grid">
+      {% for item in data.sections[0]['items'] %}{{ news_card(item, 'hot', show_section=true) }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if data.events %}
+  <section class="block">
+    <h2 class="block-title">🔗 同事件多源</h2>
+    <div class="event-list">
+      {% for ev in data.events %}{{ event_row(ev) }}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="block">
+    <h2 class="block-title">📚 分类板块</h2>
+    <div class="sections-grid-wrap">
+      {% for sec in data.sections if sec.accent != 'hot' %}{{ section_card(sec) }}{% endfor %}
+    </div>
+  </section>
+{% endif %}
+{%- endmacro %}

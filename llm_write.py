@@ -156,9 +156,11 @@ def write_items(items):
                 title_cn = result.get("title_cn", "")
                 summary_cn = result.get("summary_cn", "")
                 if title_cn:
-                    items[i]["title_original"] = items[i].get("title", "")
+                    items[i].setdefault("title_original", items[i].get("title", ""))
                     items[i]["title"] = title_cn
                 if summary_cn:
+                    if items[i].get("detail") and "detail_original" not in items[i]:
+                        items[i]["detail_original"] = items[i]["detail"]
                     items[i]["detail"] = summary_cn
                 written += 1
 

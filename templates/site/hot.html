@@ -1,98 +1,32 @@
 {% extends "site/base.html" %}
+{% from "site/_macros.html" import news_card %}
 {% block title %}热门 · AI NEWS{% endblock %}
 {% block body %}
 <div class="hero">
   <p class="hero-kicker">TRENDING</p>
   <h1>热门排行</h1>
-  <p class="hero-desc">所有条目按 LLM 评分排序，分数越高越值得关注。</p>
+  <p class="hero-desc">所有条目按 LLM 评分排序。点击卡片看详情，点击标题直达原文。</p>
 </div>
 
 <div class="content">
-  {% if not items or items|length == 0 %}
+  {% if not items %}
   <div class="empty-state">
     <h2>暂无评分数据</h2>
     <p>请先运行 produce_news.py 生成评分数据。</p>
   </div>
   {% else %}
-
-  {# 按分档分组 #}
-  {% set tier1 = items | selectattr('score', 'ge', 85) | list %}
-  {% set tier2 = items | selectattr('score', 'ge', 70) | selectattr('score', 'lt', 85) | list %}
-  {% set tier3 = items | selectattr('score', 'ge', 50) | selectattr('score', 'lt', 70) | list %}
-  {% set tier4 = items | selectattr('score', 'lt', 50) | list %}
-
-  {% if tier1 %}
-  <div class="rank-group-title">必读 · 85+</div>
+  {% set tiers = [
+    ('必读 · 85+', items | selectattr('score', 'ge', 85) | list),
+    ('重要 · 70–84', items | selectattr('score', 'ge', 70) | selectattr('score', 'lt', 85) | list),
+    ('值得关注 · 50–69', items | selectattr('score', 'ge', 50) | selectattr('score', 'lt', 70) | list),
+    ('一般 · <50', items | selectattr('score', 'lt', 50) | list),
+  ] %}
+  {% for label, group in tiers if group %}
+  <h2 class="rank-group-title">{{ label }} <span class="block-hint">{{ group | length }} 条</span></h2>
   <div class="rank-list">
-    {% for item in tier1 %}
-    <div class="rank-item">
-      <div class="rank-badge tier-1">{{ item.score }}</div>
-      <div class="rank-content">
-        <div class="rank-title">{{ item.title }}</div>
-        {% if item.detail %}<div class="rank-detail">{{ item.detail }}</div>{% endif %}
-        <div class="rank-meta">
-          {% if item.source_section %}<span>板块: {{ item.source_section }}</span>{% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
+    {% for item in group %}{{ news_card(item, 'rank', show_section=true) }}{% endfor %}
   </div>
-  {% endif %}
-
-  {% if tier2 %}
-  <div class="rank-group-title">重要 · 70-84</div>
-  <div class="rank-list">
-    {% for item in tier2 %}
-    <div class="rank-item">
-      <div class="rank-badge tier-2">{{ item.score }}</div>
-      <div class="rank-content">
-        <div class="rank-title">{{ item.title }}</div>
-        {% if item.detail %}<div class="rank-detail">{{ item.detail }}</div>{% endif %}
-        <div class="rank-meta">
-          {% if item.source_section %}<span>板块: {{ item.source_section }}</span>{% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  {% if tier3 %}
-  <div class="rank-group-title">值得关注 · 50-69</div>
-  <div class="rank-list">
-    {% for item in tier3 %}
-    <div class="rank-item">
-      <div class="rank-badge tier-3">{{ item.score }}</div>
-      <div class="rank-content">
-        <div class="rank-title">{{ item.title }}</div>
-        {% if item.detail %}<div class="rank-detail">{{ item.detail }}</div>{% endif %}
-        <div class="rank-meta">
-          {% if item.source_section %}<span>板块: {{ item.source_section }}</span>{% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  {% if tier4 %}
-  <div class="rank-group-title">一般 · <50</div>
-  <div class="rank-list">
-    {% for item in tier4 %}
-    <div class="rank-item">
-      <div class="rank-badge tier-4">{{ item.score }}</div>
-      <div class="rank-content">
-        <div class="rank-title">{{ item.title }}</div>
-        {% if item.detail %}<div class="rank-detail">{{ item.detail }}</div>{% endif %}
-        <div class="rank-meta">
-          {% if item.source_section %}<span>板块: {{ item.source_section }}</span>{% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
+  {% endfor %}
   {% endif %}
 </div>
 {% endblock %}

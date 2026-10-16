@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 """
-AI 日报生产者 — 过滤精炼 + LLM 评分 + 结构化 JSON 输出
+AI 日报生产者 — 过滤 + LLM 评分 + 写作 + 去重 + 结构化 JSON 输出
 =========================================================
-流程: 原始日报 → 过滤精炼 → LLM/关键词评分 → 热门板块 → 结构化 JSON
+流程: raw_items.json → 过滤 → LLM/关键词评分 → 写作 → 去重 → 热门板块 → news.json
+      （无 raw_items.json 时回退到解析 output/ai_news.md，但该路径没有原文链接）
 
 用法:
-  python3 produce_news.py                 # 读取 output/ai_news.md，滚动覆盖输出
+  python3 produce_news.py                 # 读取 output/raw_items.json，滚动覆盖输出
   python3 produce_news.py --date 2026-08-10  # 用指定日期写入 JSON 元数据
   python3 produce_news.py --no-score       # 跳过评分步骤
 """
@@ -17,6 +18,7 @@ from paths import (
     SCRIPT_DIR,
     OUTPUT_DIR,
     RAW_MD_PATH,
+    RAW_ITEMS_PATH,
     REFINED_MD_PATH,
     NEWS_JSON_PATH,
     ensure_output_dir,
@@ -378,6 +380,103 @@ def refined_to_json(refined_text, date_str):
 
 
 # ================================================================
+# 3b. 从结构化 raw_items.json 构建（主路径，保留 url / 来源 / 时间）
+# ================================================================
+
+SECTION_DEFS = [
+    # key, label, icon, accent, 展示上限
+    ("github", "GitHub 热门趋势", "star", "github", 8),
+    ("hf_papers", "HF 论文精选", "diamond", "paper", 8),
+    ("arxiv_ir", "arXiv 检索/推荐论文", "diamond", "paper", 6),
+    ("intl_news", "国际 AI 新闻", "globe", "news", 12),
+    ("cn_news", "国内 AI 新闻", "globe", "news", 8),
+    ("intl_company", "国际公司动态", "building", "company", 12),
+    ("cn_company", "国内公司动态", "building", "company", 8),
+    ("community", "社区热点", "message-circle", "oss", 8),
+]
+
+PRE_SCORE_LIMIT = 30  # 每个板块送去评分的最大条数（按时间取最新）
+
+
+def _parse_time(value):
+    if not value:
+        return None
+    try:
+        t = datetime.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            t = datetime.datetime.fromisoformat(str(value)[:10])
+        except ValueError:
+            return None
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=datetime.timezone.utc)
+    return t
+
+
+def raw_to_json(raw, date_str):
+    weekdays = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
+    d = datetime.date.fromisoformat(date_str)
+    now = datetime.datetime.now(datetime.timezone.utc)
+    max_age = datetime.timedelta(days=MAX_AGE_DAYS)
+
+    seen_ids = set()
+    sections = []
+    for key, label, icon, accent, limit in SECTION_DEFS:
+        require_ai = accent in {"oss", "github"}
+        items = []
+        for it in raw.get("sections", {}).get(key, []):
+            title = it.get("title", "")
+            if not title or not it.get("url") or it["id"] in seen_ids:
+                continue
+            blob = f"{title} {it.get('detail', '')}"
+            if _is_offtopic(title) or (require_ai and not _is_ai_topic(blob)):
+                continue
+            published = _parse_time(it.get("published_at"))
+            if published and now - published > max_age:
+                continue
+            if not published and any(p.search(title) for p in _STALE_PATTERNS):
+                continue
+            seen_ids.add(it["id"])
+            item = dict(it)
+            item["title"] = title[:160]
+            item["detail"] = (it.get("detail") or "")[:400]
+            items.append(item)
+
+        if not items:
+            continue
+        # 有时间的按时间倒序，保证送评的是最新内容；无时间的保持采集顺序
+        items.sort(key=lambda x: _parse_time(x.get("published_at")) or now, reverse=True)
+        sections.append({
+            "key": key, "label": label, "icon": icon, "accent": accent,
+            "limit": limit, "items": items[:PRE_SCORE_LIMIT],
+        })
+
+    return {
+        "date": date_str,
+        "date_formatted": f"{d.year}年{d.month:02d}月{d.day:02d}日",
+        "weekday": weekdays[d.weekday()],
+        "sections": sections,
+    }
+
+
+def apply_selection(sections):
+    """按信源 tier 门槛标记精选；截断到每个板块的展示上限。"""
+    try:
+        from rss_sources import tier_thresholds
+        thresholds = tier_thresholds()
+    except Exception:
+        thresholds = {"T1": 60, "T1.5": 65, "T2": 76, "default": 65}
+    default = thresholds.get("default", 65)
+    for sec in sections:
+        for item in sec.get("items", []):
+            item["selected"] = item.get("score", 0) >= thresholds.get(item.get("tier") or "default", default)
+        limit = sec.pop("limit", None)
+        if limit:
+            sec["items"] = sec["items"][:limit]
+    return sections
+
+
+# ================================================================
 # 4. 评分 + 热门板块
 # ================================================================
 
@@ -392,6 +491,7 @@ def apply_scoring(data):
     sections = data.get("sections", [])
     print("\n📊 评分阶段...")
     sections = score_sections(sections)
+    sections = apply_selection(sections)  # 先截断，再只对留下的条目做 LLM 写作
 
     # LLM 写作：为高分条目生成中文标题/摘要
     try:
@@ -464,6 +564,22 @@ def main():
         print(f"   ✅ news.json 已更新 ({len(data['sections'])} 个板块)")
         return
 
+    if RAW_ITEMS_PATH.exists():
+        with open(RAW_ITEMS_PATH, encoding="utf-8") as f:
+            raw = json.load(f)
+        date_str = args.date or raw.get("date") or today_str()
+        print(f"📄 读取结构化条目: {RAW_ITEMS_PATH.name}")
+        data = raw_to_json(raw, date_str)
+        for sec in data["sections"]:
+            print(f"   {sec['label']}: {len(sec['items'])} 条待评")
+        if not args.no_score:
+            data = apply_scoring(data)
+        else:
+            data["sections"] = apply_selection(data["sections"])
+        _write_news(data, date_str)
+        return
+
+    print("⚠️  未找到 raw_items.json，回退到 Markdown 解析（条目将没有原文链接）")
     src_path, date_str = find_source(args.date)
     if not src_path:
         print("❌ 未找到日报文件，请先运行: python3 ai_news_aggregator.py")
@@ -489,6 +605,10 @@ def main():
     if not args.no_score:
         data = apply_scoring(data)
 
+    _write_news(data, date_str)
+
+
+def _write_news(data, date_str):
     with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     print(f"   ✅ news.json → {NEWS_JSON_PATH} ({len(data['sections'])} 个板块)")

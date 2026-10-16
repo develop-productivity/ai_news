@@ -46,6 +46,24 @@ def init_db():
             FOREIGN KEY (date) REFERENCES daily_news(date)
         )
     """)
+    # 旧库迁移：补 url / source 列
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(news_items)")}
+    for col in ("url", "source"):
+        if col not in cols:
+            conn.execute(f"ALTER TABLE news_items ADD COLUMN {col} TEXT")
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS source_status (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            tier TEXT,
+            url TEXT,
+            last_fetched TEXT,
+            last_ok TEXT,
+            last_error TEXT,
+            error_count INTEGER DEFAULT 0,
+            last_kept INTEGER DEFAULT 0
+        )
+    """)
     conn.execute("CREATE INDEX IF NOT EXISTS idx_news_items_date ON news_items(date)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_news_items_score ON news_items(score DESC)")
     conn.commit()
@@ -72,11 +90,14 @@ def save_snapshot(data: dict):
 
     # 保存条目索引（用于搜索）
     for sec in sections:
+        if sec.get("accent") == "hot":
+            continue  # 热门是其他板块的副本，避免搜索结果重复
         sec_label = sec.get("label", "")
         for item in sec.get("items", []):
             conn.execute(
-                "INSERT INTO news_items (date, title, detail, score, section) VALUES (?, ?, ?, ?, ?)",
-                (date_str, item.get("title", ""), item.get("detail", ""), item.get("score", 0), sec_label)
+                "INSERT INTO news_items (date, title, detail, score, section, url, source) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (date_str, item.get("title", ""), item.get("detail", ""), item.get("score", 0), sec_label,
+                 item.get("url", ""), item.get("source", ""))
             )
 
     conn.commit()
@@ -123,8 +144,38 @@ def search_items(query: str, limit: int = 20) -> list:
     init_db()
     conn = _get_db()
     rows = conn.execute(
-        "SELECT date, title, detail, score, section FROM news_items WHERE title LIKE ? ORDER BY score DESC LIMIT ?",
-        (f"%{query}%", limit)
+        "SELECT date, title, detail, score, section, url, source FROM news_items "
+        "WHERE title LIKE ? OR detail LIKE ? ORDER BY date DESC, score DESC LIMIT ?",
+        (f"%{query}%", f"%{query}%", limit)
     ).fetchall()
     conn.close()
-    return [{"date": r["date"], "title": r["title"], "detail": r["detail"], "score": r["score"], "section": r["section"]} for r in rows]
+    return [dict(r) for r in rows]
+
+
+def record_source_status(statuses: list):
+    """记录每个信源本次采集结果；连续失败累加 error_count，成功清零。"""
+    init_db()
+    conn = _get_db()
+    now = datetime.datetime.now().isoformat(timespec="seconds")
+    for s in statuses:
+        conn.execute("""
+            INSERT INTO source_status (id, name, tier, url, last_fetched, last_ok, last_error, error_count, last_kept)
+            VALUES (:id, :name, :tier, :url, :now, CASE WHEN :ok THEN :now END, :error, CASE WHEN :ok THEN 0 ELSE 1 END, :kept)
+            ON CONFLICT(id) DO UPDATE SET
+                name = excluded.name, tier = excluded.tier, url = excluded.url,
+                last_fetched = excluded.last_fetched,
+                last_ok = COALESCE(excluded.last_ok, source_status.last_ok),
+                last_error = excluded.last_error,
+                error_count = CASE WHEN :ok THEN 0 ELSE source_status.error_count + 1 END,
+                last_kept = excluded.last_kept
+        """, {**s, "now": now, "ok": 1 if s["ok"] else 0})
+    conn.commit()
+    conn.close()
+
+
+def list_source_status() -> list:
+    init_db()
+    conn = _get_db()
+    rows = conn.execute("SELECT * FROM source_status ORDER BY tier, name").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]

@@ -38,7 +38,9 @@ ai_news_aggregator.py     produce_news.py                    server.py
 
 | 文件 | 行数 | 职责 |
 |------|------|------|
-| `ai_news_aggregator.py` | 1284 | 采集 9+ 来源 → `output/ai_news.md` |
+| `ai_news_aggregator.py` | ~1150 | 采集 → `output/raw_items.json`（结构化，主输入）+ `output/ai_news.md`（可读版） |
+| `rss_sources.py` | ~170 | 按 `sources_config.json` 用 feedparser 并发抓取 RSS，记录信源状态 |
+| `sources_config.json` | — | RSS 信源配置（AIHOT 18 源）+ tier 门槛 |
 | `produce_news.py` | 510 | 过滤精炼 → 评分 → 写作 → 去重 → 热门 → JSON |
 | `llm_score.py` | 227 | LLM 批量评分 (0-100)，无 key 回退关键词 |
 | `llm_write.py` | 178 | LLM 写作 (高分条目中文标题/摘要) |
@@ -49,7 +51,8 @@ ai_news_aggregator.py     produce_news.py                    server.py
 | `paths.py` | 47 | 滚动产物路径与旧文件清理 |
 | `templates/site/` | 455 | Jinja2 SSR 模板 (6 个页面) |
 | `static/style.css` | 355 | 亮/暗主题样式 |
-| `static/app.js` | 25 | 主题切换交互 |
+| `templates/site/_macros.html` | — | 共享组件：新闻卡片 / 板块卡片 / 事件行 |
+| `static/app.js` | ~330 | 主题切换 + 卡片放大详情弹窗 + 深链接 |
 | `docs/AIHOT_SOURCES_SPEC.md` | 117 | AIHOT 信源集成规格 |
 
 ## 数据流
@@ -83,6 +86,7 @@ ai_news_aggregator.py     produce_news.py                    server.py
 | GET | `/api/v1/ai_news/dates` | 可用日期 | ✅ |
 | GET | `/api/v1/ai_news/history` | 历史日期 JSON | ✅ |
 | GET | `/api/v1/ai_news/search?q=` | 搜索历史条目 | ✅ |
+| GET | `/api/v1/ai_news/sources` | 信源采集状态 | ✅ |
 
 ## JSON 结构
 
@@ -98,10 +102,22 @@ ai_news_aggregator.py     produce_news.py                    server.py
       "accent": "hot",
       "items": [
         {
-          "title": "...",
+          "id": "9d251ac6836a",
+          "title": "...（LLM 写作后的中文标题）",
+          "title_original": "...",
           "detail": "...",
+          "detail_original": "...（原文摘要）",
+          "url": "https://原文链接",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": ["官方", "开源"],
+          "published_at": "2026-10-16T08:00:00+00:00",
+          "links": [{"label": "arXiv", "url": "..."}],
+          "meta": {"stars": "1.2k", "authors": "..."},
+          "related": [{"title": "...", "source": "...", "url": "..."}],
           "score": 88,
-          "source_section": "国内公司动态"
+          "selected": true,
+          "source_section": "国际公司动态"
         }
       ]
     }
@@ -182,18 +198,28 @@ LLM_MODEL=deepseek-flash
 - [x] 事件聚类展示区
 - [x] "+N 更多..." 提示
 
-### Phase 7: AIHOT 信源集成 🔲
+### Phase 6b: 条目可点击 + 原文链接 ✅
+
+- [x] 采集器输出结构化 `raw_items.json`，`produce_news.py` 直接读取（不再从 Markdown 反解析，旧路径会丢 URL）
+- [x] 每条新闻带 `id / url / source / tier / published_at / links / meta`
+- [x] 卡片点击 → 从原位置放大为详情弹窗（摘要、原文摘要、元信息、其他报道、阅读原文）
+- [x] 标题 / ↗ 直接新标签页打开原文；板块卡片点击放大为全部条目，可下钻到条目再返回
+- [x] `#item=<id>` 深链接；Esc / 键盘可操作；移动端底部 sheet
+- [x] 弹窗内容全部用 textContent 渲染，链接只放行 http(s)（修复旧版 innerHTML 注入）
+
+### Phase 7: AIHOT 信源集成 🔄
 
 详见 `docs/AIHOT_SOURCES_SPEC.md`。
 
-- [ ] 创建 `sources_config.json` (27 个信源: 18 AIHOT RSS + 9 现有)
-- [ ] 用 `feedparser` 重写 RSS 采集 (替代手写 XML 解析)
-- [ ] 信源三级分层 T1/T1.5/T2，不同评分门槛
-- [ ] 每条新闻标注来源 tier
-- [ ] 评分模块按 tier 使用对应门槛 (T1=60, T1.5=65, T2=76)
-- [ ] SQLite 存储信源配置和采集状态
-- [ ] 按 `interval_minutes` 独立调度采集
-- [ ] 失败信源标记并降频
+- [x] 创建 `sources_config.json`（18 个 AIHOT RSS；非 RSS 源仍在采集器代码中）
+- [x] 用 `feedparser` 重写 RSS 采集 (替代手写 XML 解析)
+- [x] 信源分层 T1/T2，每条新闻标注来源 tier
+- [x] 按 tier 门槛标记 `selected` (T1=60, T1.5=65, T2=76)，热门优先精选、单一信源最多 2 席
+- [x] 按发布时间过滤过期条目（默认 72h，周刊类 168h）
+- [x] SQLite `source_status` 表记录采集状态（last_ok / error_count），关于页展示
+- [ ] 按 `interval_minutes` 独立调度采集（当前仍是每日 cron 一次性全抓）
+- [ ] 失败信源降频
+- [ ] 双重评分（两次分数之和 >= 2×门槛）
 
 **AIHOT 18 个 RSS 源:**
 

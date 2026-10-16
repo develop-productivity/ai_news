@@ -6,7 +6,9 @@
 
 ```
 ai_news/
-├── ai_news_aggregator.py     # 采集：9+ 来源 → output/ai_news.md
+├── ai_news_aggregator.py     # 采集 → output/raw_items.json（结构化）+ output/ai_news.md
+├── rss_sources.py            # RSS 信源采集（feedparser，配置见 sources_config.json）
+├── sources_config.json       # AIHOT 18 个 RSS 信源 + tier 门槛
 ├── produce_news.py           # 精炼 + 评分 + 热门板块 → output/news.json
 ├── llm_score.py              # LLM 评分模块（支持 OpenAI 兼容 API，无 key 回退关键词评分）
 ├── generate_html.py          # 渲染：refined.md → output/card.html
@@ -61,9 +63,9 @@ ai_news_aggregator.py          produce_news.py           server.py
 | HF Daily Papers | huggingface.co/api/daily_papers |
 | HF Models | huggingface.co/api/models（热门模型） |
 | arXiv IR | export.arxiv.org/api/query |
-| 国际新闻 | TechCrunch, Ars Technica, The Verge |
+| 国际新闻 (T2 RSS) | The Verge, TechCrunch, Ars Technica, MIT Tech Review, The Decoder, Simon Willison, Import AI, Latent Space + HN 搜索 |
 | 国内新闻 | 36氪, IT之家 |
-| 国际公司 | HuggingFace Blog, Google Research, Anthropic, OpenAI |
+| 国际公司 (T1 RSS) | OpenAI, Google DeepMind, Google Research, Hugging Face, Microsoft Research, NVIDIA, AWS ML, GitHub, Mistral, BAIR |
 | 国内公司 | DeepSeek, 智谱, 百度, 阿里, 月之暗面... |
 | 社区热点 | HackerNews, Lobsters（AI 主题过滤） |
 

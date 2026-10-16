@@ -1,53 +1,14 @@
 {% extends "site/base.html" %}
+{% from "site/_macros.html" import daily %}
 {% block title %}{{ data.date_formatted }} · AI NEWS{% endblock %}
 {% block body %}
 <div class="hero">
-  <p class="hero-kicker"><a href="/history" style="color:inherit;text-decoration:none">← 返回历史</a></p>
-  <h1>{{ data.date_formatted }} · {{ data.weekday }}</h1>
+  <p class="hero-kicker"><a href="/history" class="back-link">← 返回历史</a></p>
+  <h1>{{ data.date_formatted }}{% if data.weekday %} · {{ data.weekday }}{% endif %}</h1>
   <p class="hero-desc">该日 AI 行业日报存档。</p>
 </div>
 
 <div class="content">
-  {% for sec in data.sections %}
-    {% if sec.accent == 'hot' %}
-    <div class="hot-section">
-      <div class="hot-section-title">🔥 今日热门</div>
-      <div class="hot-grid">
-        {% for item in sec['items'] %}
-        <div class="hot-card">
-          {% if item.score %}<span class="hot-score">{{ item.score }}</span>{% endif %}
-          <div class="hot-card-title">{{ item.title }}</div>
-          {% if item.source_section %}<div class="hot-card-source">来源: {{ item.source_section }}</div>{% endif %}
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    {% else %}
-    <div class="section-group">
-      <div class="section-group-header">{{ sec.label }}</div>
-      <div class="section-grid">
-        <div class="section-card accent-{{ sec.accent }}">
-          <div class="section-card-accent"></div>
-          <div class="section-card-header">
-            <span class="section-card-icon">
-              {% if sec.icon == 'star' %}★{% elif sec.icon == 'diamond' %}◆{% elif sec.icon == 'building' %}■{% elif sec.icon == 'globe' %}●{% elif sec.icon == 'message-circle' %}○{% elif sec.icon == 'flame' %}🔥{% else %}●{% endif %}
-            </span>
-            <span class="section-card-title">{{ sec.label }}</span>
-            <span class="section-card-count">{{ sec['items']|length }}</span>
-          </div>
-          <div class="section-card-body">
-            {% for item in sec['items'] %}
-            <div class="section-item">
-              <span class="section-item-dot"></span>
-              <span class="section-item-text">{{ item.title }}</span>
-              {% if item.score and item.score > 0 %}<span class="section-item-score">{{ item.score }}</span>{% endif %}
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-  {% endfor %}
+  {{ daily(data) }}
 </div>
 {% endblock %}

@@ -69,6 +69,8 @@ def _build_user_prompt(items):
         title = (item.get("title") or "")[:150]
         detail = (item.get("detail") or "")[:200]
         lines.append(f"[{i}] {title}")
+        if item.get("source"):
+            lines.append(f"    来源: {item['source']}")
         if detail:
             lines.append(f"    摘要: {detail}")
         lines.append("")
@@ -217,8 +219,17 @@ def build_hot_section(sections, top_n=6):
             all_items.append(entry)
     if not all_items:
         return None
-    all_items.sort(key=lambda x: x.get("score", 0), reverse=True)
-    top = all_items[:top_n]
+    # 达到 tier 门槛的精选条目优先；同一来源最多占 2 席，避免热门被单一信源刷屏
+    all_items.sort(key=lambda x: (x.get("selected", True), x.get("score", 0)), reverse=True)
+    top, per_source = [], {}
+    for entry in all_items:
+        src = entry.get("source") or entry["source_section"]
+        if per_source.get(src, 0) >= 2:
+            continue
+        per_source[src] = per_source.get(src, 0) + 1
+        top.append(entry)
+        if len(top) >= top_n:
+            break
     return {
         "label": "今日热门",
         "icon": "flame",

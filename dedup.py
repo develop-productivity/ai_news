@@ -23,7 +23,7 @@ def _normalize_title(title: str) -> str:
     # 去掉常见前缀：板块名 · 标题
     t = re.sub(r'^[\w\s]+ · ', '', t)
     # 去掉标点
-    t = re.sub(r'[，。、：；！？\,\.\:\;\!\?\'\"""''（）()\[\]【】]', ' ', t)
+    t = re.sub(r'[，。、：；！？,.:;!?\'"“”‘’（）()\[\]【】]', ' ', t)
     # 压缩空格
     t = re.sub(r'\s+', ' ', t).strip()
     return t
@@ -95,14 +95,24 @@ def dedup_sections(sections: List[Dict[str, Any]]) -> tuple:
         group_items = [all_items[i] for i in group]
         group_items.sort(key=lambda x: x["score"], reverse=True)
         rep = group_items[0]
-        sources = [{"title": gi["title"], "section": gi["section_label"], "score": gi["score"]} for gi in group_items]
+        sources = [{
+            "id": gi["item"].get("id", ""),
+            "title": gi["title"],
+            "section": gi["section_label"],
+            "score": gi["score"],
+            "source": gi["item"].get("source", ""),
+            "url": gi["item"].get("url", ""),
+        } for gi in group_items]
 
-        # 保留代表条目，移除其他
+        # 保留代表条目，移除其他；代表条目记录其他报道，前端详情里可逐条跳转
         for gi in group_items[1:]:
             items_to_remove.add((gi["sec_idx"], gi["item_idx"]))
+        rep["item"]["related"] = sources[1:]
 
         events.append({
+            "id": rep["item"].get("id", ""),
             "title": rep["title"],
+            "url": rep["item"].get("url", ""),
             "score": rep["score"],
             "section": rep["section_label"],
             "source_count": len(group),

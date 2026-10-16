@@ -12,7 +12,11 @@ AI News Aggregator v2 - 每日 AI 新闻聚合
   - 各大模型公司博客 (OpenAI, Anthropic, Google, HF, Meta)
   - 国内大模型公司动态 (DeepSeek, 智谱, 百度, 阿里等)
 
-输出: output/ai_news.md（滚动覆盖，不按日期堆积）
+  - AIHOT 18 个 RSS 信源（官方 T1 / 媒体个人 T2，见 sources_config.json）
+
+输出（滚动覆盖，不按日期堆积）:
+  output/raw_items.json  结构化条目（含 url / 来源 / tier / 时间），produce_news.py 的主输入
+  output/ai_news.md      可读 Markdown 版本
 """
 
 import requests
@@ -28,6 +32,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from paths import (
     OUTPUT_DIR as OUTPUT_DIR_PATH,
     RAW_MD_PATH,
+    RAW_ITEMS_PATH,
     ensure_output_dir,
     cleanup_dated_artifacts,
 )
@@ -42,7 +47,7 @@ MAX_RETRIES = 2
 GITHUB_TRENDING_URL = "https://github.com/trending"
 HF_PAPERS_URL = "https://huggingface.co/api/daily_papers"
 HF_MODELS_URL = "https://huggingface.co/api/models"
-ARXIV_API_URL = "http://export.arxiv.org/api/query"
+ARXIV_API_URL = "https://export.arxiv.org/api/query"
 
 CACHE_FILE = os.path.join(OUTPUT_DIR, ".translation_cache.json")
 
@@ -361,6 +366,7 @@ def fetch_hf_papers():
                 "summary": summary,
                 "summary_cn": "",
                 "upvotes": paper.get("upvotes", 0),
+                "published_at": item.get("publishedAt") or paper.get("publishedAt"),
             })
         except Exception:
             continue
@@ -478,99 +484,58 @@ def fetch_arxiv_ir_papers():
 
 
 # ── 5. 国际 AI 新闻 ──
+# RSS 媒体源（TechCrunch / Verge / Ars / MIT TR / Decoder / ...）统一走 rss_sources，
+# 这里只保留非 RSS 的 HackerNews 搜索。
 
 def fetch_international_ai_news():
-    """国际 AI 行业新闻聚合"""
-    print("  [AI News] 正在聚合国际 AI 新闻...")
-    all_news = []
-
-    # 5a. TechCrunch AI
-    try:
-        tc = safe_request("https://techcrunch.com/category/artificial-intelligence/feed/")
-        if tc:
-            root = ET.fromstring(tc.content)
-            for item in root.findall(".//item")[:5]:
-                title = item.findtext("title", "").strip()
-                link = item.findtext("link", "").strip()
-                desc = strip_html(item.findtext("description", "")).strip()
-                if title and len(title) > 10:
-                    all_news.append({
-                        "source": "TechCrunch AI", "title": title,
-                        "url": link, "summary": truncate(desc, 200),
-                    })
-    except Exception as e:
-        print(f"    [WARN] TechCrunch: {e}")
-
-    # 5b. HackerNews AI
+    """国际 AI 新闻（非 RSS 部分）：HackerNews AI 搜索"""
+    print("  [AI News] 正在获取 HackerNews AI 讨论...")
+    news = []
     try:
         cutoff = int(time.time()) - 86400 * 2
+        # Algolia 不支持 OR 语法；用 optionalWords 让任一词命中即可，再按热度门槛过滤
+        words = "AI LLM machine learning"
         hn = safe_request("https://hn.algolia.com/api/v1/search", params={
-            "query": "AI OR machine learning OR LLM",
-            "tags": "story", "hitsPerPage": 8,
-            "numericFilters": f"created_at_i>{cutoff}",
+            "query": words, "optionalWords": words,
+            "tags": "story", "hitsPerPage": 20,
+            "numericFilters": f"created_at_i>{cutoff},points>30",
         })
         if hn:
-            data = hn.json()
-            for hit in data.get("hits", [])[:6]:
+            hits = sorted(hn.json().get("hits", []), key=lambda h: h.get("points", 0), reverse=True)
+            for hit in hits:
+                if len(news) >= 8:
+                    break
                 title = hit.get("title", "")
-                url = hit.get("url", "") or f"https://news.ycombinator.com/item?id={hit.get('objectID', '')}"
-                if title:
-                    all_news.append({
-                        "source": "Hacker News", "title": title,
-                        "url": url, "points": hit.get("points", 0),
-                        "summary": "",
-                    })
+                if not title or is_game_or_noise(title) or not is_ai_topic(title):
+                    continue
+                oid = hit.get("objectID", "")
+                news.append({
+                    "source": "Hacker News", "title": title,
+                    "url": hit.get("url", "") or f"https://news.ycombinator.com/item?id={oid}",
+                    "discuss_url": f"https://news.ycombinator.com/item?id={oid}" if oid else "",
+                    "points": hit.get("points", 0),
+                    "published_at": hit.get("created_at"),
+                    "summary": "",
+                })
     except Exception as e:
         print(f"    [WARN] HN: {e}")
+    print(f"    ✓ {len(news)} 条")
+    return news
 
-    # 5c. Ars Technica AI
-    try:
-        ars = safe_request("https://feeds.arstechnica.com/arstechnica/index")
-        if ars:
-            root = ET.fromstring(ars.content)
-            for item in root.findall(".//item")[:5]:
-                title = item.findtext("title", "").strip()
-                link = item.findtext("link", "").strip()
-                desc = strip_html(item.findtext("description", "") or "").strip()
-                if title and is_ai_topic(title) and not is_game_or_noise(title):
-                    all_news.append({
-                        "source": "Ars Technica", "title": title,
-                        "url": link, "summary": truncate(desc, 200),
-                    })
-    except Exception as e:
-        print(f"    [WARN] Ars: {e}")
 
-    # 5d. The Verge AI
-    try:
-        v = safe_request("https://www.theverge.com/ai-artificial-intelligence/rss.xml")
-        if v:
-            root = ET.fromstring(v.content)
-            for entry in root.findall(".//entry")[:5]:
-                title = entry.findtext("title", "").strip()
-                link_el = entry.find("link")
-                url = link_el.get("href", "") if link_el is not None else ""
-                if title and len(title) > 10 and not is_game_or_noise(title):
-                    all_news.append({
-                        "source": "The Verge AI", "title": title,
-                        "url": url, "summary": "",
-                    })
-    except Exception as e:
-        print(f"    [WARN] Verge: {e}")
+# ── 5b. RSS 信源（AIHOT 18 源 + Anthropic，见 sources_config.json）──
 
-    # Dedup + drop game/noise (TechCrunch AI 分区偶发混入弱相关)
-    seen = set()
-    unique = []
-    for n in all_news:
-        title = n.get("title", "")
-        if is_game_or_noise(title):
-            continue
-        key = title.lower().strip()[:60]
-        if key not in seen:
-            seen.add(key)
-            unique.append(n)
-
-    print(f"    ✓ {len(unique)} 条 (来自 {len(set(n['source'] for n in unique))} 来源)")
-    return unique[:15]
+def fetch_rss_feeds():
+    """按 sources_config.json 抓取全部 RSS 信源，返回 {section_key: [items]}"""
+    print("  [RSS] 正在抓取配置信源...")
+    from rss_sources import fetch_all
+    items, statuses = fetch_all(reject=is_game_or_noise)
+    by_section = {}
+    for it in items:
+        by_section.setdefault(it["section_key"], []).append(it)
+    ok = sum(1 for s in statuses if s["ok"])
+    print(f"    ✓ {ok}/{len(statuses)} 信源成功，共 {len(items)} 条")
+    return by_section
 
 
 # ── 6. 国内 AI 新闻 ──
@@ -732,64 +697,6 @@ def fetch_chinese_ai_news():
     return unique[:15]
 
 
-# ── 7. 国际大模型公司动态 ──
-
-def fetch_international_company_news():
-    """国际大模型公司博客/RSS"""
-    print("  [Companies] 正在获取国际公司动态...")
-    news = []
-
-    sources = [
-        ("Hugging Face Blog", "https://huggingface.co/blog/feed.xml", "item"),
-        ("Google Research", "https://blog.research.google/feeds/posts/default?alt=rss", "item"),
-        ("Anthropic", "https://www.anthropic.com/feed.xml", "item"),
-    ]
-
-    for name, url, item_tag in sources:
-        try:
-            resp = safe_request(url)
-            if resp:
-                root = ET.fromstring(resp.content)
-                for item in root.findall(f".//{item_tag}")[:6]:
-                    title = item.findtext("title", "").strip()
-                    link = item.findtext("link", "").strip()
-                    if title and len(title) > 8:
-                        news.append({"source": name, "title": title, "url": link})
-                print(f"    ✓ {name}: {len([n for n in news if n['source']==name])} 条")
-        except Exception as e:
-            print(f"    [WARN] {name}: {e}")
-
-    # OpenAI blog - scrape (no public RSS)
-    try:
-        oa = safe_request("https://openai.com/news/")
-        if oa:
-            soup = safe_parse_html(oa.text)
-            if soup:
-                for a in soup.find_all("a", href=True):
-                    title = re.sub(r'\s+', ' ', a.text.strip())
-                    href = a["href"]
-                    if not title or len(title) < 20 or len(title) > 120:
-                        continue
-                    if "opens in a new window" in title.lower():
-                        continue
-                    if is_game_or_noise(title):
-                        continue
-                    if "/news/" not in href and "openai.com" not in href:
-                        continue
-                    news.append({
-                        "source": "OpenAI",
-                        "title": title,
-                        "url": href if href.startswith("http") else "https://openai.com" + href,
-                    })
-                    break
-    except Exception:
-        pass
-
-    news = [n for n in news if not is_game_or_noise(n.get("title", ""))]
-    print(f"    ✓ 国际公司动态共计 {len(news)} 条")
-    return news[:12]
-
-
 # ── 8. 国内大模型公司动态 ──
 
 def fetch_chinese_company_news():
@@ -854,6 +761,7 @@ def fetch_chinese_company_news():
                         "source": comp_name,
                         "title": article["title"],
                         "url": article["url"],
+                        "origin": "IT之家",
                     })
                 print(f"    ✓ {comp_name}: {len(unique_articles)} 条")
     except Exception as e:
@@ -894,6 +802,7 @@ def fetch_community_highlights():
                                 "url": url,
                                 "source": "HackerNews Top",
                                 "score": score,
+                                "discuss_url": f"https://news.ycombinator.com/item?id={story_id}",
                             })
                 except Exception:
                     continue
@@ -914,6 +823,7 @@ def fetch_community_highlights():
                         "url": url,
                         "source": "Lobsters",
                         "score": item.get("score", 0),
+                        "discuss_url": item.get("comments_url", ""),
                     })
     except Exception as e:
         print(f"    [WARN] Lobsters: {e}")
@@ -1183,6 +1093,77 @@ def generate_report(gh, hf_papers, hf_models, arxiv_ir, intl_news, cn_news, intl
     return md
 
 
+# ============ 结构化输出 ============
+
+def _raw_item(title, url, detail="", source="", tier="", published_at=None,
+              links=None, meta=None, tags=None, item_id=None):
+    from rss_sources import item_id as make_id
+    links = [l for l in (links or []) if l.get("url")]
+    meta = {k: v for k, v in (meta or {}).items() if v}
+    return {
+        "id": item_id or make_id(url, title),
+        "title": (title or "").strip(),
+        "url": url or "",
+        "detail": (detail or "").strip(),
+        "source": source,
+        "tier": tier,
+        "tags": tags or [],
+        "published_at": published_at,
+        "links": links,
+        "meta": meta,
+    }
+
+
+def build_raw_items(r):
+    """把各采集模块的结果统一成 {section_key: [item]}，保留 url / 来源 / 时间等元数据。
+    produce_news.py 优先读取它，不再从 Markdown 反解析（反解析会丢失链接）。"""
+    sections = {}
+
+    sections["github"] = [
+        _raw_item(g["name"], g["url"], g.get("description", ""), "GitHub Trending",
+                  meta={"stars": fmt_stars(g.get("stars", "")), "language": g.get("language", "")})
+        for g in r.get("gh", [])
+    ]
+    sections["hf_papers"] = [
+        _raw_item(p["title"], p.get("hf_url") or p.get("arxiv_url"),
+                  p.get("summary_cn") or p.get("summary", ""), "HF Daily Papers",
+                  published_at=p.get("published_at"),
+                  links=[{"label": "arXiv", "url": p.get("arxiv_url", "")}],
+                  meta={"authors": ", ".join(p.get("authors", [])), "upvotes": p.get("upvotes", 0)})
+        for p in r.get("hf_papers", [])
+    ]
+    sections["arxiv_ir"] = [
+        _raw_item(p["title"], p["url"], p.get("summary_cn") or p.get("summary", ""), "arXiv cs.IR",
+                  published_at=p.get("published") or None,
+                  meta={"authors": ", ".join(p.get("authors", [])), "categories": ", ".join(p.get("categories", [])[:3])})
+        for p in r.get("arxiv_ir", [])
+    ]
+
+    def news_item(n):
+        if n.get("id"):  # 来自 rss_sources，已是标准结构
+            return _raw_item(n["title"], n["url"], n.get("summary", ""), n["source"], n.get("tier", ""),
+                             n.get("published_at"), tags=n.get("tags"), item_id=n["id"])
+        return _raw_item(n["title"], n["url"], n.get("summary", ""), n.get("source", ""),
+                         published_at=n.get("published_at"),
+                         links=[{"label": "讨论", "url": n.get("discuss_url", "")}],
+                         meta={"points": n.get("points") or n.get("score")})
+
+    sections["intl_news"] = [news_item(n) for n in r.get("intl_news", [])]
+    sections["intl_company"] = [news_item(n) for n in r.get("intl_companies", [])]
+    sections["cn_news"] = [news_item(n) for n in r.get("cn_news", [])]
+    sections["cn_company"] = [
+        _raw_item(n["title"], n["url"], "", n.get("origin", ""), tags=[n["source"]])
+        for n in r.get("cn_companies", [])
+    ]
+    sections["community"] = [news_item(n) for n in r.get("community", [])]
+
+    return {
+        "date": today_str(),
+        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "sections": sections,
+    }
+
+
 # ============ 主函数 ============
 
 def main():
@@ -1213,7 +1194,7 @@ def main():
         ("🔍 4/9 arXiv IR Papers", fetch_arxiv_ir_papers, "arxiv_ir"),
         ("🌐 5/9 International AI News", fetch_international_ai_news, "intl_news"),
         ("🇨🇳 6/9 Chinese AI News", fetch_chinese_ai_news, "cn_news"),
-        ("🏢 7/9 International Companies", fetch_international_company_news, "intl_companies"),
+        ("📡 7/9 RSS Feeds (AIHOT)", fetch_rss_feeds, "rss"),
         ("🏢 8/9 Chinese Companies", fetch_chinese_company_news, "cn_companies"),
         ("💬 9/9 Community Highlights", fetch_community_highlights, "community"),
     ]
@@ -1227,7 +1208,16 @@ def main():
             results[key] = func()
         except Exception as e:
             print(f"  [ERROR] {e}")
-            results[key] = []
+            results[key] = {} if key == "rss" else []
+
+    rss = results.pop("rss", {}) or {}
+    results["intl_news"] = rss.get("intl_news", []) + results.get("intl_news", [])
+    results["intl_companies"] = rss.get("intl_company", [])
+
+    raw = build_raw_items(results)
+    with open(RAW_ITEMS_PATH, "w", encoding="utf-8") as f:
+        json.dump(raw, f, ensure_ascii=False, indent=2)
+    print(f"\n  🧾 结构化条目 → {RAW_ITEMS_PATH} ({sum(len(v) for v in raw['sections'].values())} 条)")
 
     # Generate report
     print(f"\n{'─'*40}")

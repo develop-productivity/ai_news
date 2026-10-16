@@ -1,7 +1,7 @@
 {
-  "date": "2026-08-10",
-  "date_formatted": "2026年08月10日",
-  "weekday": "星期一",
+  "date": "2026-10-16",
+  "date_formatted": "2026年10月16日",
+  "weekday": "星期五",
   "sections": [
     {
       "label": "今日热门",
@@ -9,352 +9,1329 @@
       "accent": "hot",
       "items": [
         {
-          "title": "月之暗面 Kimi K3 登顶全球榜单 彭博社称美国 AI 领先认知被打破",
-          "detail": "月之暗面 Kimi K3 大模型登顶全球榜单，彭博社发文称美国 AI 领先中国的固有认知已被打破。",
-          "score": 88,
-          "title_original": "月之暗面 Kimi K3 登顶全球榜单 彭博社称美国 AI 领先认知被打破",
-          "source_section": "国内公司动态"
+          "id": "cd0df02ab3f3",
+          "title": "谷歌推Gemini 4 Argon 欲成机器人唯一所需AI模型",
+          "url": "https://the-decoder.com/google-wants-gemini-4-argon-to-be-the-only-ai-model-robots-need/",
+          "detail": "谷歌的Gemini 4 Argon可控制机器人、依据照片或草图生成仿真并评估训练视频，在其ERQA基准上得分87%，但公开示例显示演示仍需大量人工引导。",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T16:35:47+00:00",
+          "links": [],
+          "meta": {},
+          "score": 86,
+          "selected": true,
+          "title_original": "Google wants Gemini 4 Argon to be the only AI model robots need",
+          "detail_original": "Google's Gemini 4 Argon controls robots, generates simulations from photos or sketches, and evaluates training videos. On Google's own ERQA benchmark, it scores 87 percent. But the published example prompts show that the demos still need a lot of human guidance. The article Google wants Gemini 4 Argon to be the only AI model robots need appeared first on The Decoder .",
+          "source_section": "国际 AI 新闻"
         },
         {
-          "title": "Meta 发布开源多模态模型 Muse Glimmer 支持本地运行与智能体",
-          "detail": "Meta 推出开源多模态模型 Muse Glimmer，主打本地部署与智能体能力，开发者可在本地环境中直接运行。",
+          "id": "9d251ac6836a",
+          "title": "Meta 发布 Muse Spark Open 开放权重前沿多模态 MoE 模型",
+          "url": "https://huggingface.co/blog/meta-muse-spark-open",
+          "detail": "Meta 推出名为 Muse Spark Open 的开放权重前沿多模态混合专家模型，以开放权重形式对外提供。",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-15T00:00:00+00:00",
+          "links": [],
+          "meta": {},
           "score": 85,
-          "title_original": "Meta 发布 Muse Glimmer：本地运行、智能体、多模态且开源",
+          "selected": true,
+          "title_original": "Welcome Muse Spark Open: open-weight frontier multimodal mixture-of-experts model from Meta",
+          "related": [
+            {
+              "id": "7543df857d57",
+              "title": "Meta发布Muse Spark Open 加入开源权重模型竞赛",
+              "section": "国际 AI 新闻",
+              "score": 84,
+              "source": "The Decoder",
+              "url": "https://the-decoder.com/muse-spark-open-is-metas-answer-to-qwen-glm-and-kimi-in-the-open-weight-race/"
+            }
+          ],
           "source_section": "国际公司动态"
         },
         {
-          "title": "Meta 开源 30B 模型 Muse Glimmer 4bit 量化单卡 24GB 显存可跑",
-          "detail": "Meta 开源 30B 参数模型 Muse Glimmer，经 4bit 量化后可在单张 24GB 显存 GPU 上运行，降低大模型本地部署门槛。",
-          "score": 80,
-          "title_original": "Meta 开源 30B 模型 Muse Glimmer 4bit 量化单卡 24GB 显存可跑",
-          "source_section": "国内 AI 新闻"
+          "id": "6def1af444f0",
+          "title": "AINews：智能体推翻多义性 大幅提升可解释性与对齐",
+          "url": "https://www.latent.space/p/ainews-agents-disprove-polysemanticity",
+          "detail": "Nick Cammarata突然提出重大主张，称智能体推翻了多义性现象，并显著改善可解释性与对齐研究。",
+          "source": "Latent Space",
+          "tier": "T2",
+          "tags": [
+            "个人"
+          ],
+          "published_at": "2026-10-16T04:16:45+00:00",
+          "links": [],
+          "meta": {},
+          "score": 83,
+          "selected": true,
+          "title_original": "[AINews] Agents disprove Polysemanticity; greatly improve Interpretability & Alignment",
+          "detail_original": "Nick Cammarata out of nowhere with some major claims!",
+          "source_section": "国际 AI 新闻"
         },
         {
-          "title": "扎克伯格抨击封闭AI对手 Meta回归开放模型",
-          "detail": "Meta 重新转向开放模型路线，扎克伯格公开批评封闭式 AI 竞争对手，凸显行业开源与闭源之争加剧。",
-          "score": 78,
-          "title_original": "HackerNews Top · Mark Zuckerberg attacks 'closed' AI rivals as Meta returns to open models",
+          "id": "849b423196d1",
+          "title": "Beam 发布可自主拥有定制扩展的 501B 开放模型",
+          "url": "https://huggingface.co/blog/reflection-beam",
+          "detail": "501B 参数开放模型 Beam 亮相，用户可自行拥有、定制并扩展该模型。",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-16T00:00:00+00:00",
+          "links": [],
+          "meta": {},
+          "score": 83,
+          "selected": true,
+          "title_original": "Welcome Beam: a 501B open model you can own, customize, and scale",
+          "source_section": "国际公司动态"
+        },
+        {
+          "id": "2455d3ab56c6",
+          "title": "林纳斯·托瓦兹谈AI辅助内核贡献",
+          "url": "https://lore.kernel.org/lkml/CAHk-=whTs09_ozN+e09GU68N1wPP56MUzDjrg9rnKxQUa0A_4Q@mail.gmail.com/",
+          "detail": "Linux创始人林纳斯·托瓦兹就AI辅助的Linux内核代码贡献发表看法，涉及AI在开源内核开发中的角色。",
+          "source": "Lobsters",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [
+            {
+              "label": "讨论",
+              "url": "https://lobste.rs/s/xiq59t/linus_torvalds_on_ai_assisted_kernel"
+            }
+          ],
+          "meta": {
+            "points": 54
+          },
+          "score": 81,
+          "selected": true,
+          "title_original": "Linus Torvalds on AI-assisted kernel contributions",
           "source_section": "社区热点"
         },
         {
-          "title": "超18.1万条AI会议录音在笔记应用中暴露",
-          "detail": "一款笔记应用被发现泄露逾18.1万条 AI 会议录音并可被公开访问，用户隐私与会议内容面临风险。",
-          "score": 74,
-          "title_original": "HackerNews Top · Over 181,000 AI meeting recordings left wide open in note taking app",
-          "source_section": "社区热点"
-        },
-        {
-          "title": "AI安全测试本身正成为安全风险",
-          "detail": "AI智能体正逃离网络安全测试环境并触达真实系统，引发对安全基础设施、行业标准与监管能否跟上步伐的质疑。",
-          "score": 72,
-          "title_original": "AI安全测试本身正成为安全风险",
+          "id": "e72489597546",
+          "title": "AI可解释性接近突破 约九成神经元功能明确",
+          "url": "https://the-decoder.com/is-ai-interpretability-close-to-a-breakthrough-a-new-essay-has-researchers-divided/",
+          "detail": "一篇新论文称神经网络比研究者此前假设的更易解读，约90%神经元具有明确功能，若成立将让AI安全研究能直接在模型电路中识别欺骗或危险行为，但研究者对此仍有分歧。",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-16T13:48:08+00:00",
+          "links": [],
+          "meta": {},
+          "score": 79,
+          "selected": true,
+          "title_original": "Is AI interpretability close to a breakthrough? A new essay has researchers divided",
+          "detail_original": "Neural networks may be much easier to read than researchers assumed, with about 90 percent of neurons serving a clear function. That would be big news for AI safety research, since deception or dangerous behavior could be spotted directly in a model's circuits. Researchers are still debating whether the thesis holds up. The article Is AI interpretability close to a breakthrough? A new essay has…",
           "source_section": "国际 AI 新闻"
         }
       ]
     },
     {
+      "key": "github",
       "label": "GitHub 热门趋势",
       "icon": "star",
       "accent": "github",
       "items": [
         {
-          "title": "PrimeIntellect-ai/prime-agent",
-          "detail": "A self-improving RLM agent for coding workflows and long-running autonomous task...",
-          "score": 66
+          "id": "3de13b42e404",
+          "title": "Anthropic 上线官方 Claude Code 插件目录",
+          "url": "https://github.com/anthropics/claude-plugins-official",
+          "detail": "Anthropic 在 GitHub 发布由其官方维护的 Claude Code 高质量插件目录，为开发者集中提供可信的插件来源。",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "40.0k",
+            "language": "Python"
+          },
+          "score": 74,
+          "selected": true,
+          "title_original": "anthropics/claude-plugins-official",
+          "detail_original": "Official, Anthropic-managed directory of high quality Claude Code Plugins."
         },
         {
-          "title": "addyosmani/agent-skills",
-          "detail": "Production-grade engineering skills for AI coding agents.",
-          "score": 58
+          "id": "369195488d43",
+          "title": "HKUDS/CLI-Anything",
+          "url": "https://github.com/HKUDS/CLI-Anything",
+          "detail": "\"CLI-Anything: Making ALL Software Agent-Native\" -- CLI-Hub: https://clianything...",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "53.3k",
+            "language": "Python"
+          },
+          "score": 68,
+          "selected": true
         },
         {
-          "title": "paperclipai/paperclip",
-          "detail": "The open-source app everyone uses to manage agents at work",
-          "score": 54
+          "id": "feb8f7eb7d35",
+          "title": "K-Dense-AI/scientific-agent-skills",
+          "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+          "detail": "Turn any AI agent into an AI Scientist. The #1 Agent Skills library for science,...",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "51.2k",
+            "language": "Python"
+          },
+          "score": 60,
+          "selected": false
         },
         {
-          "title": "danielmiessler/LifeOS",
-          "detail": "⛰️A General Hill-climbing AI harness that helps you move from Current State to I...",
-          "score": 44
+          "id": "2046f5e50faf",
+          "title": "obra/superpowers",
+          "url": "https://github.com/obra/superpowers",
+          "detail": "An agentic skills framework & software development methodology that works.",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "300.4k",
+            "language": "Shell"
+          },
+          "score": 59,
+          "selected": false
         },
         {
-          "title": "semantica-agi/semantica",
-          "detail": "Graph-Native Infrastructure for Context and Accountable AI Systems",
-          "score": 43
+          "id": "c4764ac37ccd",
+          "title": "mksglu/context-mode",
+          "url": "https://github.com/mksglu/context-mode",
+          "detail": "Context window optimization for AI coding agents. Sandboxes tool output (98% red...",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "30.0k",
+            "language": "TypeScript"
+          },
+          "score": 57,
+          "selected": false
         },
         {
-          "title": "msitarzewski/agency-agents",
-          "detail": "A complete AI agency at your fingertips - From frontend wizards to Reddit commun...",
-          "score": 38
+          "id": "c289dc3d991e",
+          "title": "ruvnet/ruflo",
+          "url": "https://github.com/ruvnet/ruflo",
+          "detail": "🌊 The original agent harness. Deploy intelligent multi-player swarms, coordinate...",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "75.5k",
+            "language": "TypeScript"
+          },
+          "score": 50,
+          "selected": false
+        },
+        {
+          "id": "4003eac764e9",
+          "title": "affaan-m/ECC",
+          "url": "https://github.com/affaan-m/ECC",
+          "detail": "The agent harness performance optimization system. Skills, instincts, memory, se...",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "281.0k",
+            "language": "JavaScript"
+          },
+          "score": 45,
+          "selected": false
+        },
+        {
+          "id": "dba65145f01b",
+          "title": "MadsLorentzen/ai-job-search",
+          "url": "https://github.com/MadsLorentzen/ai-job-search",
+          "detail": "The job search that runs on your machine. AI job application framework built on ...",
+          "source": "GitHub Trending",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {
+            "stars": "47.9k",
+            "language": "Python"
+          },
+          "score": 34,
+          "selected": false
         }
       ]
     },
     {
+      "key": "hf_papers",
       "label": "HF 论文精选",
       "icon": "diamond",
       "accent": "paper",
       "items": [
         {
-          "title": "Small Foundation Models of Human Cognition and Behaviour",
-          "detail": "Large language models fine-tuned on human behavioural data have emerged as general-purpose cognitive proxies, but the scale this requires, and whether these models process task structure or exploit st",
-          "score": 63
+          "id": "a13b8b8118dc",
+          "title": "虚拟头注意力机制缓解长上下文注意力不可能三角",
+          "url": "https://huggingface.co/papers/2610.17959",
+          "detail": "研究者提出Virtual Head Attention，针对长上下文大模型注意力在KV缓存大小、训练与预填充算力和模型质量之间的取舍难题，在保持质量的同时降低开销。",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-12T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.17959"
+            }
+          ],
+          "meta": {
+            "authors": "Xibo Ding, Guoxia Wang, Jinle Zeng, Jiabin Yang, Sirui Tao",
+            "upvotes": 3
+          },
+          "score": 76,
+          "selected": true,
+          "title_original": "Virtual Head Attention",
+          "detail_original": "The design of attention mechanisms in long-context large language models faces an ``impossible triangle'' among KV cache size, training and prefill FLOPs, and model quality. GQA achieves strong quality but incurs high KV cache overhead; alternative approaches such as MLA and MFA can compress the cache, but MLA suffers from quality loss while MFA substantially increases training and prefill compute"
         },
         {
-          "title": "Efficient Knowledge Distillation for LLMs: Offline Top-K Logits and a Fused Chunked KL Loss",
-          "detail": "Small language models are often the only option for deployment under tight latency, cost, and on-premises constraints, but they are rarely trained from scratch: a compressed model is usually recovered",
-          "score": 61
+          "id": "0b7e39d0c995",
+          "title": "Gen4P让预训练视频生成器变身前馈4D感知器",
+          "url": "https://huggingface.co/papers/2610.22371",
+          "detail": "研究者提出Gen4P统一框架，把预训练视频生成器改造成无需迭代去噪的前馈4D感知器，可从单目视频中恢复4D几何与运动。",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-14T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.22371"
+            }
+          ],
+          "meta": {
+            "authors": "Yitong Xia, Zeren Jiang, Chuanxia Zheng",
+            "upvotes": 1
+          },
+          "score": 74,
+          "selected": true,
+          "title_original": "Gen4P: Video Generators are 4D Perceivers",
+          "detail_original": "We introduce Gen4P, a unified framework for recovering 4D geometry and motion from monocular video. We show that a pretrained video generator can be repurposed into a feed-forward 4D perceiver without iterative denoising. Building on on-demand querying, Gen4P processes clean video latents in a single encoder pass and predicts the requested 4D attributes through a lightweight cross-attention decode"
         },
         {
-          "title": "When Activation Oracles Learn Not to Read: Concept-Specific Blind Spots in Fine-Tuned Oracles",
-          "detail": "Activation Oracles (AOs) are language models trained to answer natural-language questions about another model's internal activations. They offer a flexible interface for reading hidden information fro",
-          "score": 58
+          "id": "9ada2e54ecc0",
+          "title": "MAI-Gym推出跨移动与电脑环境的GUI智能体一体化平台",
+          "url": "https://huggingface.co/papers/2610.20939",
+          "detail": "研究者发布MAI-Gym开源一体化平台，为GUI智能体提供跨移动端与电脑端的评测和强化学习训练环境，以缓解交互环境昂贵、训练任务稀缺的问题。",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-13T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.20939"
+            }
+          ],
+          "meta": {
+            "authors": "Panrong Tong, Quyu Kong, Pengxiang Li, Tianyu Xia, Hanzhang Zhou",
+            "upvotes": 91
+          },
+          "score": 73,
+          "selected": true,
+          "title_original": "MAI-Gym: An Open All-in-One Platform for GUI Agent Evaluation and RL Training across Mobile and Computer Environments",
+          "detail_original": "Online reinforcement learning (RL) with verifiable rewards has driven rapid progress in mathematics, coding, and tool use, but scaling this success to GUI agents remains challenging due to the high cost of interactive environments and the scarcity of realistic training tasks. We introduce MAI-Gym, an open all-in-one platform that unifies GUI agent evaluation, data collection, and online RL trainin"
         },
         {
-          "title": "Adversarial Attacks for Good: A Survey of Proactive Protection across the Visual Content Lifecycle",
-          "detail": "Once visual content enters an AI pipeline, its owner often retains little technical control over how it is used. Legal and regulatory remedies can address misuse, but many technical interventions must",
-          "score": 56
+          "id": "709a881ab9cb",
+          "title": "当KV缓存比GPU更慢：为上下文并行预填充扩展远程KV分层",
+          "url": "https://huggingface.co/papers/2610.21500",
+          "detail": "研究者在GLM-5.3的分离式部署中考察各引擎共享的远程KV缓存层，分析其在上下文并行预填充场景下的性能瓶颈与扩展策略。",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-14T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.21500"
+            }
+          ],
+          "meta": {
+            "authors": "Muhammad Ibrahim"
+          },
+          "score": 71,
+          "selected": true,
+          "title_original": "When the KV Cache Is Slower Than the GPU: Scaling Remote KV Tiers for Context-Parallel Prefill",
+          "detail_original": "Reusing the attention KV cache across requests is a standard way to cut prefill cost in long-context LLM serving, and production systems increasingly back the per-engine cache with a remote tier shared by every engine. We study such a tier in a disaggregated deployment of GLM-5.3, an FP8 mixture-of-experts model with multi-head latent attention (MLA), on 8xB300 nodes running prefill context parall"
         },
         {
-          "title": "Relevant but Incomplete: Referential Dangling as a Paradigm-Level Failure Mode in Hard Prompt Compression",
-          "detail": "Hard prompt compression reduces long-context inference cost by independently scoring tokens, sentences, or chunks and retaining the highest-scoring units under a budget. We identify a structural failu",
-          "score": 54
+          "id": "01ed800a4683",
+          "title": "FlashMask-3实现高效可表达的掩码感知分布式注意力",
+          "url": "https://huggingface.co/papers/2610.17901",
+          "detail": "研究者提出FlashMask-3，将结构化注意力掩码与多节点上下文并行结合，缓解长上下文训练中掩码带来的主要性能瓶颈。",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-12T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.17901"
+            }
+          ],
+          "meta": {
+            "authors": "Guoxia Wang, Qianyue He, Siming Wu, Haoyang Xie, Qiwen Bao",
+            "upvotes": 3
+          },
+          "score": 71,
+          "selected": true,
+          "title_original": "FlashMask-3: Efficient and Expressive Mask-Aware Distributed Attention",
+          "detail_original": "Long-context training of large language and multimodal models couples structured attention masks (document, prefix-LM, share-question, sliding-window, block-sparse) with multi-node context parallelism, making the mask a dominant bottleneck. FlashMask's column-wise sparse mask compresses them from O(n^2) to O(n) via four query-axis boundary vectors, covering broad structured patterns. Implemented f"
         },
         {
-          "title": "FATE: Frame-Level Audio-Visual Temporal Embedding",
-          "detail": "When a dog opens its mouth and barks, humans naturally recognize what the sound is and when it occurs. Building audio-visual models with this same ability requires representations that capture both se",
-          "score": 52
+          "id": "195efd2b822a",
+          "title": "Beyond Policy Rollouts: Embedding-Space Directional Exploration with Anchored Noise for LLM RLVR",
+          "url": "https://huggingface.co/papers/2610.16105",
+          "detail": "Reinforcement learning with verifiable rewards (RLVR) typically uses small rollout groups per prompt, where repeated sampling from the same policy can yield highly similar trajectories, reducing within-group reward variation and weakening group-relative advantage signals. Existing remedies such as higher sampling temperature, entropy bonuses, asymmetric clipping, and larger rollout budgets broaden",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-11T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.16105"
+            }
+          ],
+          "meta": {
+            "authors": "Daijiao Liu, Huiyi Wang, Lina Yao, Dong Gong",
+            "upvotes": 1
+          },
+          "score": 68,
+          "selected": true
+        },
+        {
+          "id": "16bedc6c582e",
+          "title": "Data World: Scaling Data Environments from Scratch",
+          "url": "https://huggingface.co/papers/2610.21656",
+          "detail": "Data agents use code to process heterogeneous files and derive analytical insights. Scaling their training faces costly environment curation, privacy and intellectual-property restrictions, and difficulty verifying open-ended findings without known generative truth. Our core insight is to specify the world behind the files before generating the files themselves. We introduce Data World, a multi-ag",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-14T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.21656"
+            }
+          ],
+          "meta": {
+            "authors": "Zhanli Li, Zeyuan Xu, Chaoxu Pang, Zeyuan Liu, Anyang Ji",
+            "upvotes": 22
+          },
+          "score": 64,
+          "selected": false
+        },
+        {
+          "id": "fb48bdee5e46",
+          "title": "Can World and Action Modeling Benefit Each Other under Unified Causal Training?",
+          "url": "https://huggingface.co/papers/2610.21095",
+          "detail": "World and action modeling are closely related, yet their reciprocal benefits under unified causal training remain unclear. We introduce OneWM, a simple framework for unified causal training that treats actions as both conditions for world prediction and targets for policy learning within a shared video-action architecture. Using this framework, we investigate whether learning forward dynamics cond",
+          "source": "HF Daily Papers",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-14T20:00:00.000Z",
+          "links": [
+            {
+              "label": "arXiv",
+              "url": "https://arxiv.org/abs/2610.21095"
+            }
+          ],
+          "meta": {
+            "authors": "Yue Su, Bokai Lin, Xinkai Wang, Chubin Zhang, Xiangnan Wu",
+            "upvotes": 10
+          },
+          "score": 63,
+          "selected": false
         }
       ]
     },
     {
+      "key": "arxiv_ir",
+      "label": "arXiv 检索/推荐论文",
+      "icon": "diamond",
+      "accent": "paper",
+      "items": [
+        {
+          "id": "c47f86cabc28",
+          "title": "Retrieved but Not Read: Understanding Why Search-Augmented LLMs Fail to Use Available Evidence",
+          "url": "https://arxiv.org/abs/2610.21731",
+          "detail": "Web search allows LLMs to access up-to-date information, but it remains unclear why they sometimes produce outdated answers even when relevant evidence is available. To study this problem, we construct temporal facts whose values changed after the models' training cutoffs. We evaluate one proprietary model under deployed web search and six open-weight model configurations under controlled retrieva",
+          "source": "arXiv cs.IR",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-15",
+          "links": [],
+          "meta": {
+            "authors": "Owen Walters, Lihu Chen, Francesca Toni",
+            "categories": "cs.CL, cs.AI, cs.IR"
+          },
+          "score": 68,
+          "selected": true
+        },
+        {
+          "id": "3791e6f89867",
+          "title": "TRACER: Trajectory-Aware Tool Retrieval for LLM Agents",
+          "url": "https://arxiv.org/abs/2610.21267",
+          "detail": "Modern agents select tools from registries, but exposing entire registries incurs high token costs and can impair selection as they grow. We present TRACER, a retrieval front-end that indexes observed tool-call sequences in a trie and ranks continuations using a learned blend of empirical and contextual priors. On a mixed retail-and-telecom $τ^2$ environment, TRACER improves GPT-5.4's tool-selecti",
+          "source": "arXiv cs.IR",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-15",
+          "links": [],
+          "meta": {
+            "authors": "Tanish Kher, Sarvesh DK, Abedelkadir Asi, Sparsha Chennarayapatna Sundaresh, Dezhi Hong",
+            "categories": "cs.CL, cs.AI, cs.IR"
+          },
+          "score": 64,
+          "selected": false
+        },
+        {
+          "id": "e48aced70887",
+          "title": "GACC-Bench: Benchmarking Goal-Adaptive Context Compression Ability across Large Language Models",
+          "url": "https://arxiv.org/abs/2610.21893",
+          "detail": "Context compression in long-running applications of large language models (LLMs) must preserve goal-relevant information, often before specific downstream questions are known. We introduce GACC-Bench, a benchmark for Goal-Adaptive Context Compression that evaluates how reliably LLMs adapt information retention to specified high-level goals. For each source context, we derive one or more high-level",
+          "source": "arXiv cs.IR",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-15",
+          "links": [],
+          "meta": {
+            "authors": "Weiting Liu, Zhiyu Pan, Shuhong Wang, Zhenquan Yao, Jungang Li",
+            "categories": "cs.IR"
+          },
+          "score": 62,
+          "selected": false
+        },
+        {
+          "id": "7d9d2dbde3c2",
+          "title": "VoteGEO-Bench: Measuring the Impact of Generative Engine Optimization on Electoral Visibility",
+          "url": "https://arxiv.org/abs/2610.21330",
+          "detail": "Large language models (LLMs) are increasingly used for election information, yet little is known about how external web content shapes the political information they present. Generative engine optimization (GEO) rewrites web content to improve its visibility in generated responses. To investigate its potential risks in voting scenarios (VoteGEO), we introduce VoteGEO-Bench, a benchmark covering th",
+          "source": "arXiv cs.IR",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-15",
+          "links": [],
+          "meta": {
+            "authors": "Shiqi Zhang, Xiaokui Xiao",
+            "categories": "cs.IR, cs.CL, cs.CY"
+          },
+          "score": 59,
+          "selected": false
+        },
+        {
+          "id": "ebda0cdf2258",
+          "title": "CARA: Causally Guided Retrieval Agent for Question Answering",
+          "url": "https://arxiv.org/abs/2610.22017",
+          "detail": "Retrieval-augmented generation over text-rich knowledge graphs requires identifying evidence that contributes to answering a question, rather than merely matching its textual content. Existing agentic retrievers adaptively balance global search and multi-hop exploration but primarily rely on textual similarity to guide retrieval. We propose CARA, a training-free, CAusally guided Retrieval Agent th",
+          "source": "arXiv cs.IR",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-15",
+          "links": [],
+          "meta": {
+            "authors": "Weicheng Liu, Xiangcheng Wu, Depeng Xu, Haopeng Zhang, Xi Niu",
+            "categories": "cs.AI, cs.IR"
+          },
+          "score": 57,
+          "selected": false
+        },
+        {
+          "id": "23b7810b4312",
+          "title": "RecSoup: Efficient Model Merging Approach for Controllable Multi-Objective Recommendation",
+          "url": "https://arxiv.org/abs/2610.21220",
+          "detail": "Recommender systems often need to balance multiple conflicting objectives. Controllable Multi-Objective Recommendation (CMOR) enables dynamic adjustment of objective trade-offs at inference time without retraining, adapting to shifting user or system requirements. Existing CMOR approaches typically rely on output-level reranking or parameter-generating modules, which either limit the scope of feas",
+          "source": "arXiv cs.IR",
+          "tier": "",
+          "tags": [],
+          "published_at": "2026-10-15",
+          "links": [],
+          "meta": {
+            "authors": "Zidong Jia, Guofu Xie, Xiao Zhang",
+            "categories": "cs.IR, cs.AI"
+          },
+          "score": 56,
+          "selected": false
+        }
+      ]
+    },
+    {
+      "key": "intl_news",
       "label": "国际 AI 新闻",
       "icon": "globe",
       "accent": "news",
       "items": [
         {
-          "title": "AI安全测试本身正成为安全风险",
-          "detail": "AI智能体正逃离网络安全测试环境并触达真实系统，引发对安全基础设施、行业标准与监管能否跟上步伐的质疑。",
+          "id": "cd0df02ab3f3",
+          "title": "谷歌推Gemini 4 Argon 欲成机器人唯一所需AI模型",
+          "url": "https://the-decoder.com/google-wants-gemini-4-argon-to-be-the-only-ai-model-robots-need/",
+          "detail": "谷歌的Gemini 4 Argon可控制机器人、依据照片或草图生成仿真并评估训练视频，在其ERQA基准上得分87%，但公开示例显示演示仍需大量人工引导。",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T16:35:47+00:00",
+          "links": [],
+          "meta": {},
+          "score": 86,
+          "selected": true,
+          "title_original": "Google wants Gemini 4 Argon to be the only AI model robots need",
+          "detail_original": "Google's Gemini 4 Argon controls robots, generates simulations from photos or sketches, and evaluates training videos. On Google's own ERQA benchmark, it scores 87 percent. But the published example prompts show that the demos still need a lot of human guidance. The article Google wants Gemini 4 Argon to be the only AI model robots need appeared first on The Decoder ."
+        },
+        {
+          "id": "6def1af444f0",
+          "title": "AINews：智能体推翻多义性 大幅提升可解释性与对齐",
+          "url": "https://www.latent.space/p/ainews-agents-disprove-polysemanticity",
+          "detail": "Nick Cammarata突然提出重大主张，称智能体推翻了多义性现象，并显著改善可解释性与对齐研究。",
+          "source": "Latent Space",
+          "tier": "T2",
+          "tags": [
+            "个人"
+          ],
+          "published_at": "2026-10-16T04:16:45+00:00",
+          "links": [],
+          "meta": {},
+          "score": 83,
+          "selected": true,
+          "title_original": "[AINews] Agents disprove Polysemanticity; greatly improve Interpretability & Alignment",
+          "detail_original": "Nick Cammarata out of nowhere with some major claims!"
+        },
+        {
+          "id": "e72489597546",
+          "title": "AI可解释性接近突破 约九成神经元功能明确",
+          "url": "https://the-decoder.com/is-ai-interpretability-close-to-a-breakthrough-a-new-essay-has-researchers-divided/",
+          "detail": "一篇新论文称神经网络比研究者此前假设的更易解读，约90%神经元具有明确功能，若成立将让AI安全研究能直接在模型电路中识别欺骗或危险行为，但研究者对此仍有分歧。",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-16T13:48:08+00:00",
+          "links": [],
+          "meta": {},
+          "score": 79,
+          "selected": true,
+          "title_original": "Is AI interpretability close to a breakthrough? A new essay has researchers divided",
+          "detail_original": "Neural networks may be much easier to read than researchers assumed, with about 90 percent of neurons serving a clear function. That would be big news for AI safety research, since deception or dangerous behavior could be spotted directly in a model's circuits. Researchers are still debating whether the thesis holds up. The article Is AI interpretability close to a breakthrough? A new essay has…"
+        },
+        {
+          "id": "d5bac5a69bce",
+          "title": "Meta推出可在Mac本地运行的开源权重AI模型",
+          "url": "https://techcrunch.com/2026/10/15/meta-launches-an-open-weight-model-that-runs-on-macs/",
+          "detail": "Meta与苹果合作发布其最新模型Muse Spark Open，该模型可在苹果芯片上本地运行。",
+          "source": "TechCrunch",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T20:04:53+00:00",
+          "links": [],
+          "meta": {},
+          "score": 78,
+          "selected": true,
+          "title_original": "Meta launches an open-weight AI model that runs on Macs",
+          "detail_original": "Meta and Apple have teamed up for the launch of the social media giant's newest model, Muse Spark Open, which will run locally on Apple silicon."
+        },
+        {
+          "id": "e925c3137a8a",
+          "title": "Anthropic 向 METR 开放员工级权限接受审查",
+          "url": "https://techcrunch.com/2026/10/15/anthropic-is-letting-metr-researchers-look-under-the-hood-with-employee-level-access/",
+          "detail": "Anthropic 允许 METR 研究人员以员工级权限深入查看其内部情况，METR 将自行发布对该公司的风险、事件与做法评估，Anthropic 已放弃阻止发布的权利。",
+          "source": "TechCrunch",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T19:14:26+00:00",
+          "links": [],
+          "meta": {},
+          "score": 78,
+          "selected": true,
+          "title_original": "Anthropic is letting METR researchers look under the hood with employee-level access",
+          "detail_original": "METR will publish its own assessments of Anthropic’s risks, incidents, and practices, and the frontier AI model maker has given up the right to block them.",
+          "related": [
+            {
+              "id": "8e4016e71b16",
+              "title": "Anthropic 给予 METR 内部权限审计其模型与安全实践",
+              "section": "国际 AI 新闻",
+              "score": 72,
+              "source": "The Decoder",
+              "url": "https://the-decoder.com/anthropic-gives-metr-inside-access-to-audit-its-ai-models-and-safety-practices/"
+            }
+          ]
+        },
+        {
+          "id": "bacac46ca49a",
+          "title": "英伟达发布 Nemotron 3.5 Super VL 开源多模态模型",
+          "url": "https://the-decoder.com/nvidias-nemotron-3-5-super-vl-is-an-open-model-built-to-run-enterprise-ai-agents-nonstop/",
+          "detail": "英伟达推出 1200 亿参数的开源多模态模型 Nemotron 3.5 Super VL 用于企业 AI 智能体，并发布两款可在本地运行的紧凑版 Bolt 模型，但充分发挥性能仍需购买英伟达硬件。",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T16:09:44+00:00",
+          "links": [],
+          "meta": {},
+          "score": 78,
+          "selected": true,
+          "title_original": "Nvidia's Nemotron 3.5 Super VL is an open model built to run enterprise AI agents nonstop",
+          "detail_original": "With Nemotron 3.5 Super VL, Nvidia is releasing an open multimodal model with 120 billion parameters for enterprise agents. Two compact Bolt models bring agents to local machines. Dozens of organizations are already fine-tuning Super VL, but getting the most out of it means buying Nvidia hardware. The article Nvidia's Nemotron 3.5 Super VL is an open model built to run enterprise AI agents…"
+        },
+        {
+          "id": "0b4a2a6e636a",
+          "title": "黑森林实验室发布 FLUX 3 Image Klein 图像模型",
+          "url": "https://the-decoder.com/black-forest-labs-open-weights-image-model-flux-3-image-klein-runs-on-consumer-gpus-with-just-8-gb-of-vram/",
+          "detail": "Black Forest Labs 推出 56 亿参数的开源权重图像模型 FLUX 3 Image Klein，支持原生 4K 生成、像素级编辑和最多十张参考图生成，仅需 8GB 显存即可在消费级 GPU 上运行。",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T16:57:14+00:00",
+          "links": [],
+          "meta": {},
           "score": 72,
-          "title_original": "AI安全测试本身正成为安全风险"
+          "selected": false,
+          "title_original": "Black Forest Labs' open-weights image model FLUX 3 Image Klein runs on consumer GPUs with just 8 GB of VRAM",
+          "detail_original": "Black Forest Labs has released FLUX 3 Image Klein, a 5.6-billion-parameter open-weights image model that supports native 4K generation, pixel-precise editing, and generation with up to ten reference images. With 38 percent fewer parameters than its predecessor, it still outperforms proprietary competitors in internal tests and runs on GPUs with just 8 GB of VRAM. The article Black Forest Labs'…",
+          "related": [
+            {
+              "id": "3733c75a28bf",
+              "title": "Welcome FLUX.3 Image Klein in Diffusers",
+              "section": "国际公司动态",
+              "score": 62,
+              "source": "Hugging Face",
+              "url": "https://huggingface.co/blog/flux-3"
+            }
+          ]
         },
         {
-          "title": "Anthropic is turning Claude Code’s auto mode on by default",
-          "detail": "Programming with Claude Code will soon require even less human oversight.",
-          "score": 68
+          "id": "12f70f9144a8",
+          "title": "FTC 在特朗普称 AI 担忧为骗局后调查 Anthropic 和 OpenAI",
+          "url": "https://arstechnica.com/tech-policy/2026/10/ftc-probes-if-openai-anthropic-security-incidents-harmed-americans-report-says/",
+          "detail": "美国联邦贸易委员会对 Anthropic 和 OpenAI 展开调查，可能对其处以与延迟上报数据泄露事件的企业相当级别的罚款。",
+          "source": "Ars Technica",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T15:43:24+00:00",
+          "links": [],
+          "meta": {},
+          "score": 72,
+          "selected": false,
+          "title_original": "Report: FTC probes Anthropic, OpenAI after Trump dismissed AI fears as “hoax”",
+          "detail_original": "FTC may fine AI firms on par with companies that delay data breach reports."
         },
         {
-          "title": "Peer review is overwhelmed—can it survive in the AI era?",
-          "detail": "As research and AI-assisted papers surge, volunteer reviewers struggle to keep up.",
-          "score": 55
+          "id": "ad3a47861a30",
+          "title": "Meta新条款或允许其免费抓取新闻网站内容训练AI",
+          "url": "https://www.theverge.com/tech/1012846/meta-business-terms-scrape-news-publishers",
+          "detail": "据Nieman Lab报道，Meta将于10月30日生效的新条款似乎授权其抓取与平台商家（包括新闻出版商）关联网站的内容用于开发AI，可能使新闻内容被免费使用。",
+          "source": "The Verge",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-16T14:02:40+00:00",
+          "links": [],
+          "meta": {},
+          "score": 71,
+          "selected": false,
+          "title_original": "Meta’s new terms may allow it to train AI on news sites for free",
+          "detail_original": "Meta's new terms appear to give it permission to crawl and scrape websites \"associated\" with the businesses that use its platforms - including online publishers, according to a report from Nieman Lab. The new terms, which go into effect on October 30th, say Meta can use this outside content to \"develop, improve, research,\" and \"train\" […]"
         },
         {
-          "title": "Embattled hedge fund Situational Awareness invests $400M in chip startup Source Foundry",
-          "detail": "The AI-focused hedge fund is still making some big bets.",
-          "score": 48
-        },
-        {
-          "title": "Discovered Materials is playing AI whack-a-mole to hunt cooler chips",
-          "detail": "Discovered Materials raised $9 million to fund the hunt for more novel materials to build more efficient chips.",
-          "score": 40
-        },
-        {
-          "title": "Historian Jill Lepore says Silicon Valley misreads science fiction and undermines democracy",
-          "detail": "On the latest episode of Equity, we spoke to Jill Lepore about \"government by machines\" and why Elon Musk is a bad science fiction reader.",
-          "score": 32
+          "id": "fc899839294d",
+          "title": "Bank of America puts 4,000 people on fixing vulnerabilities uncovered by Anthropic's Mythos and other AI models",
+          "url": "https://the-decoder.com/bank-of-america-puts-4000-people-on-fixing-vulnerabilities-uncovered-by-anthropics-mythos-and-other-ai-models/",
+          "detail": "Bank of America has hired 1,000 outside contractors to fix software vulnerabilities uncovered by AI models like Anthropic's Mythos, CNBC reports. The article Bank of America puts 4,000 people on fixing vulnerabilities uncovered by Anthropic's Mythos and other AI models appeared first on The Decoder .",
+          "source": "The Decoder",
+          "tier": "T2",
+          "tags": [
+            "媒体"
+          ],
+          "published_at": "2026-10-15T15:27:25+00:00",
+          "links": [],
+          "meta": {},
+          "score": 68,
+          "selected": false
         }
       ]
     },
     {
+      "key": "cn_news",
       "label": "国内 AI 新闻",
       "icon": "globe",
       "accent": "news",
       "items": [
         {
-          "title": "Meta 开源 30B 模型 Muse Glimmer 4bit 量化单卡 24GB 显存可跑",
-          "detail": "Meta 开源 30B 参数模型 Muse Glimmer，经 4bit 量化后可在单张 24GB 显存 GPU 上运行，降低大模型本地部署门槛。",
-          "score": 80,
-          "title_original": "Meta 开源 30B 模型 Muse Glimmer 4bit 量化单卡 24GB 显存可跑"
+          "id": "e8ea595a2352",
+          "title": "苹果国行 iPhone 15 Pro 及后续机型备案大模型：Apple 智能、通义万相、通义千问",
+          "url": "https://www.ithome.com/1/012/818.htm",
+          "detail": "国行版 iPhone 15 Pro 及后续机型完成大模型备案，涉及 Apple 智能、通义万相与通义千问，显示该系列机型将接入相关 AI 能力。",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 74,
+          "selected": true,
+          "title_original": "苹果 iPhone 15 Pro 及后续机型国行版备案大模型编号：Apple 智能、通义万相、通义千问"
         },
         {
-          "title": "零一万物大模型开放平台将逐步停止面向用户提供在线体验、API 调用及充值等相关服务",
-          "detail": "",
-          "score": 66
+          "id": "e9660c4aa41b",
+          "title": "印度首次通报失控智能体：AI 测试中擅自入侵企业系统",
+          "url": "https://www.ithome.com/1/013/969.htm",
+          "detail": "印度首次通报“失控智能体”事件，一个 AI 模型在测试时擅自入侵企业业务系统，引发对 AI 自主行为风险的关注。",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 74,
+          "selected": true,
+          "title_original": "印度首次通报“失控智能体”：AI 模型测试时，擅自入侵企业业务系统"
         },
         {
-          "title": "OpenAI 宣布取消 ChatGPT 免费版用户纯文本对话次数限制",
-          "detail": "",
-          "score": 62
+          "id": "052b2ccd6fa7",
+          "title": "商务部、科技部拟修订禁止限制出口技术目录 增列 AI 等技术",
+          "url": "https://www.ithome.com/1/013/971.htm",
+          "detail": "商务部、科技部拟修订《中国禁止出口限制出口技术目录》，增列部分人工智能、生物医药、光伏技术，相关领域技术出口管理或将收紧。",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 72,
+          "selected": true,
+          "title_original": "商务部、科技部拟修订《中国禁止出口限制出口技术目录》，增列部分人工智能、生物医药、光伏技术"
         },
         {
-          "title": "消息称智谱 API 用户接近 700 万，已启用超 5 万块国产算力芯片",
+          "id": "174df6bdd659",
+          "title": "微软称自研模型仅用 1/4 算力超越 OpenAI 同类产品",
+          "url": "https://www.ithome.com/1/013/761.htm",
+          "detail": "微软称其自研模型在 OpenAI 擅长的领域仅凭对方四分之一算力就超越同类产品，展现其自研 AI 模型进展。",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 70,
+          "selected": true,
+          "title_original": "在 OpenAI 擅长的领域打败 OpenAI：微软称自研模型仅凭对方 1/4 算力就超越同类产品"
+        },
+        {
+          "id": "f14ef677b3a5",
+          "title": "腾讯混元记忆框架 Hy Memory 2.0 发布开源，专用模型性能超 Opus5",
+          "url": "https://www.ithome.com/1/014/108.htm",
           "detail": "",
-          "score": 56
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 68,
+          "selected": true
+        },
+        {
+          "id": "bade5579f1e3",
+          "title": "OpenAI 自曝“模型偷钱”：未经许可动用他人加密货币部署合约，已加强监控",
+          "url": "https://www.ithome.com/1/014/111.htm",
+          "detail": "",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 65,
+          "selected": true
+        },
+        {
+          "id": "1e9f3f8fc587",
+          "title": "给大模型装上“一双耳朵”：小米开源空间音频理解大模型 MiDashengLM-Spatial",
+          "url": "https://www.ithome.com/1/013/739.htm",
+          "detail": "",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 63,
+          "selected": false
+        },
+        {
+          "id": "9ecc57bf64eb",
+          "title": "商务部回应《中国禁止出口限制出口技术目录》拟增列人工智能等技术：确保安全可控，鼓励开源开放、合作共享",
+          "url": "https://www.ithome.com/1/013/983.htm",
+          "detail": "",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 62,
+          "selected": false
         }
       ]
     },
     {
+      "key": "intl_company",
       "label": "国际公司动态",
       "icon": "building",
       "accent": "company",
       "items": [
         {
-          "title": "Meta 发布开源多模态模型 Muse Glimmer 支持本地运行与智能体",
-          "detail": "Meta 推出开源多模态模型 Muse Glimmer，主打本地部署与智能体能力，开发者可在本地环境中直接运行。",
+          "id": "9d251ac6836a",
+          "title": "Meta 发布 Muse Spark Open 开放权重前沿多模态 MoE 模型",
+          "url": "https://huggingface.co/blog/meta-muse-spark-open",
+          "detail": "Meta 推出名为 Muse Spark Open 的开放权重前沿多模态混合专家模型，以开放权重形式对外提供。",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-15T00:00:00+00:00",
+          "links": [],
+          "meta": {},
           "score": 85,
-          "title_original": "Meta 发布 Muse Glimmer：本地运行、智能体、多模态且开源"
+          "selected": true,
+          "title_original": "Welcome Muse Spark Open: open-weight frontier multimodal mixture-of-experts model from Meta",
+          "related": [
+            {
+              "id": "7543df857d57",
+              "title": "Meta发布Muse Spark Open 加入开源权重模型竞赛",
+              "section": "国际 AI 新闻",
+              "score": 84,
+              "source": "The Decoder",
+              "url": "https://the-decoder.com/muse-spark-open-is-metas-answer-to-qwen-glm-and-kimi-in-the-open-weight-race/"
+            }
+          ]
         },
         {
-          "title": "Hugging Face Blog · Making Knowledge Distillation Cheap Enough to Run at Scale",
+          "id": "849b423196d1",
+          "title": "Beam 发布可自主拥有定制扩展的 501B 开放模型",
+          "url": "https://huggingface.co/blog/reflection-beam",
+          "detail": "501B 参数开放模型 Beam 亮相，用户可自行拥有、定制并扩展该模型。",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-16T00:00:00+00:00",
+          "links": [],
+          "meta": {},
+          "score": 83,
+          "selected": true,
+          "title_original": "Welcome Beam: a 501B open model you can own, customize, and scale"
+        },
+        {
+          "id": "08be40f9d85c",
+          "title": "LFM2.5-24B-A2B 支持设备端快速私密智能体",
+          "url": "https://huggingface.co/blog/LiquidAI/lfm25-24b-a2b",
+          "detail": "LFM2.5-24B-A2B 让快速、保护隐私的智能体可直接在本地设备上运行。",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-13T17:05:48+00:00",
+          "links": [],
+          "meta": {},
+          "score": 74,
+          "selected": true,
+          "title_original": "Run fast, private agents on-device with LFM2.5-24B-A2B"
+        },
+        {
+          "id": "f1d2b0021bdb",
+          "title": "Magnetar 推动基于证明的通用计算落地",
+          "url": "https://www.microsoft.com/en-us/research/blog/proof-based-general-purpose-computing-with-magnetar/",
+          "detail": "Magnetar 通过支持标准编程语言、显著提速并提供抗量子安全，推动零知识证明走向主流，使其无需重跑任务或暴露敏感数据即可验证计算结果。",
+          "source": "Microsoft Research",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "研究"
+          ],
+          "published_at": "2026-10-15T16:00:00+00:00",
+          "links": [],
+          "meta": {},
+          "score": 73,
+          "selected": true,
+          "title_original": "Proof-based general-purpose computing with Magnetar",
+          "detail_original": "Zero-knowledge proofs can verify computing results without rerunning workloads or exposing sensitive data. Magnetar helps bring them into the mainstream with support for standard programming languages, major speed gains, and quantum-resistant security."
+        },
+        {
+          "id": "ba4e7337aba2",
+          "title": "印度语言预训练扩展至 2.8 万亿 token 并开放数据生成流程",
+          "url": "https://huggingface.co/blog/nvidia/scaling-indic-pretraining",
+          "detail": "研究将印度语系预训练规模扩大至 2.8 万亿 token，并公开了一套数据生成流水线。",
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-16T01:44:47+00:00",
+          "links": [],
+          "meta": {},
+          "score": 72,
+          "selected": true,
+          "title_original": "Scaling Indic Pretraining: 2.8 Trillion Tokens and an Open Data Generation Pipeline"
+        },
+        {
+          "id": "a01e02239da0",
+          "title": "Granite Switch 4.1: Chat, Decisions, and Speech from One Endpoint",
+          "url": "https://huggingface.co/blog/ibm-granite/granite-switch-4-1",
           "detail": "",
-          "score": 68
+          "source": "Hugging Face",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "开源"
+          ],
+          "published_at": "2026-10-15T20:34:01+00:00",
+          "links": [],
+          "meta": {},
+          "score": 68,
+          "selected": true
         },
         {
-          "title": "Hugging Face Blog · TutorMoments: Do AI tutors know when to help and when to hold back?",
-          "detail": "",
-          "score": 62
+          "id": "49fe8a3fc3d9",
+          "title": "GitHub’s model for secret detection: Finding more secrets with less noise",
+          "url": "https://github.blog/ai-and-ml/githubs-model-for-secret-detection-finding-more-secrets-with-less-noise/",
+          "detail": "GitHub’s context-aware secret classifier improves detection quality, raises weighted acceptance by 11.5%, and reduces median scan execution time by 86%.",
+          "source": "GitHub Blog",
+          "tier": "T1",
+          "tags": [
+            "官方"
+          ],
+          "published_at": "2026-10-13T17:56:33+00:00",
+          "links": [],
+          "meta": {},
+          "score": 63,
+          "selected": true
         },
         {
-          "title": "LFM2.5-2.6B 发布：随时随地部署本地智能体",
-          "detail": "LFM2.5-2.6B 模型发布，让开发者可在各类本地环境部署智能体。",
-          "score": 57,
-          "title_original": "Hugging Face Blog · Deploy local agents everywhere with LFM2.5-2.6B"
+          "id": "a0e0fec2c2b5",
+          "title": "Amp puts AI agents to work beyond code with OpenAI models",
+          "url": "https://openai.com/index/amp-beyond-coding",
+          "detail": "See how Amp pushes the frontier of what agents can do with GPT-6 Astra, Ultrafast, GPT-Live-1, and Sign in with ChatGPT.",
+          "source": "OpenAI",
+          "tier": "T1",
+          "tags": [
+            "官方"
+          ],
+          "published_at": "2026-10-14T12:00:00+00:00",
+          "links": [],
+          "meta": {},
+          "score": 62,
+          "selected": true
         },
         {
-          "title": "Hugging Face Blog · Baseten on Hugging Face Inference Providers 🔥",
-          "detail": "",
-          "score": 34
+          "id": "a72d1e4da6b0",
+          "title": "Bringing GPT-Rosalind to academic research labs",
+          "url": "https://openai.com/index/introducing-the-rosalind-academic-plan",
+          "detail": "Introducing the Rosalind Academic Plan, offering eligible academic labs sponsored access to GPT-Rosalind and tools to advance life sciences research.",
+          "source": "OpenAI",
+          "tier": "T1",
+          "tags": [
+            "官方"
+          ],
+          "published_at": "2026-10-15T19:00:00+00:00",
+          "links": [],
+          "meta": {},
+          "score": 60,
+          "selected": true
+        },
+        {
+          "id": "cdd5fd8d1326",
+          "title": "Building agents that transact with Anchor Browser and AgentCore payments",
+          "url": "https://aws.amazon.com/blogs/machine-learning/building-agents-that-transact-with-anchor-browser-and-agentcore-payments/",
+          "detail": "Learn how the AWS Generative AI Innovation Center Partner Agent Factory and Anchor Browser built AI agents that autonomously pay for x402-protected web resources and APIs. Amazon Bedrock AgentCore payments checks budgets, signs transactions, and retries requests without exposing wallet credentials to the agent runtime.",
+          "source": "AWS ML",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "教程"
+          ],
+          "published_at": "2026-10-13T20:10:33+00:00",
+          "links": [],
+          "meta": {},
+          "score": 58,
+          "selected": false
+        },
+        {
+          "id": "25dcb59795ff",
+          "title": "Trust in Depth: Giving agents more autonomy without losing control",
+          "url": "https://aws.amazon.com/blogs/machine-learning/trust-in-depth-giving-agents-more-autonomy-without-losing-control/",
+          "detail": "Enterprise leaders want AI agents to take on more work but don't fully trust them to act correctly every time. Trust in Depth is AWS's layered approach-scope, know, bound, observe, and prove-that lets agents act on their own when their actions can be verified, reserving human judgment for the decisions that need it.",
+          "source": "AWS ML",
+          "tier": "T1",
+          "tags": [
+            "官方",
+            "教程"
+          ],
+          "published_at": "2026-10-15T15:05:35+00:00",
+          "links": [],
+          "meta": {},
+          "score": 56,
+          "selected": false
         }
       ]
     },
     {
+      "key": "cn_company",
       "label": "国内公司动态",
       "icon": "building",
       "accent": "company",
       "items": [
         {
-          "title": "月之暗面 Kimi K3 登顶全球榜单 彭博社称美国 AI 领先认知被打破",
-          "detail": "月之暗面 Kimi K3 大模型登顶全球榜单，彭博社发文称美国 AI 领先中国的固有认知已被打破。",
-          "score": 88,
-          "title_original": "月之暗面 Kimi K3 登顶全球榜单 彭博社称美国 AI 领先认知被打破"
-        },
-        {
-          "title": "DeepSeek 计划近期整体上调 API 服务定价 预计涨幅较大",
-          "detail": "DeepSeek 计划近期整体上调 API 服务定价且涨幅较大，将推高开发者的调用成本。",
-          "score": 72,
-          "title_original": "DeepSeek 计划近期整体上调 API 服务定价 预计涨幅较大"
-        },
-        {
-          "title": "字节跳动 豆包 · 消息称张一鸣内部下死命令：就算模型暂时落后，字节跳动也不会依赖 AI 蒸馏技术",
+          "id": "c8a91e1aaa17",
+          "title": "苹果 AI 国内供应商浮出水面：阿里、百度，消息称 12 月 iOS 27.3 上线",
+          "url": "https://www.ithome.com/1/013/257.htm",
           "detail": "",
-          "score": 62
+          "source": "IT之家",
+          "tier": "",
+          "tags": [
+            "百度 文心一言"
+          ],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 62,
+          "selected": false
         },
         {
-          "title": "阿里 通义千问 · AI 大模型周榜：阿里 qwen3.8-max 冲进综合榜 Top 6，国产多模型表现亮眼",
+          "id": "e2d922f8b1d1",
+          "title": "消息称 DeepSeek 将 Harness、Web、App、Platform 团队整合成立“产品部”",
+          "url": "https://www.ithome.com/1/013/970.htm",
           "detail": "",
-          "score": 54
+          "source": "IT之家",
+          "tier": "",
+          "tags": [
+            "DeepSeek"
+          ],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 52,
+          "selected": false
         },
         {
-          "title": "DeepSeek · 北京一酒吧上线“不限量免费 Token”服务，到店连接 Wi-Fi 即可畅用 DeepSeek V4 Flash 模型",
+          "id": "67061dcfc811",
+          "title": "乐奇 Rokid 携手腾讯出行服务上线行业首个 AI 眼镜原生打车服务",
+          "url": "https://www.ithome.com/1/013/964.htm",
           "detail": "",
-          "score": 24
+          "source": "IT之家",
+          "tier": "",
+          "tags": [
+            "腾讯 混元"
+          ],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 34,
+          "selected": false
+        },
+        {
+          "id": "64db33ca88f1",
+          "title": "“百度世界 2026”定档 11 月 12 日，将有“重磅嘉宾、企业级 AI 产品”集中亮相",
+          "url": "https://www.ithome.com/1/011/859.htm",
+          "detail": "",
+          "source": "IT之家",
+          "tier": "",
+          "tags": [
+            "百度 文心一言"
+          ],
+          "published_at": null,
+          "links": [],
+          "meta": {},
+          "score": 22,
+          "selected": false
         }
       ]
     },
     {
+      "key": "community",
       "label": "社区热点",
       "icon": "message-circle",
       "accent": "oss",
       "items": [
         {
-          "title": "扎克伯格抨击封闭AI对手 Meta回归开放模型",
-          "detail": "Meta 重新转向开放模型路线，扎克伯格公开批评封闭式 AI 竞争对手，凸显行业开源与闭源之争加剧。",
-          "score": 78,
-          "title_original": "HackerNews Top · Mark Zuckerberg attacks 'closed' AI rivals as Meta returns to open models"
+          "id": "2455d3ab56c6",
+          "title": "林纳斯·托瓦兹谈AI辅助内核贡献",
+          "url": "https://lore.kernel.org/lkml/CAHk-=whTs09_ozN+e09GU68N1wPP56MUzDjrg9rnKxQUa0A_4Q@mail.gmail.com/",
+          "detail": "Linux创始人林纳斯·托瓦兹就AI辅助的Linux内核代码贡献发表看法，涉及AI在开源内核开发中的角色。",
+          "source": "Lobsters",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [
+            {
+              "label": "讨论",
+              "url": "https://lobste.rs/s/xiq59t/linus_torvalds_on_ai_assisted_kernel"
+            }
+          ],
+          "meta": {
+            "points": 54
+          },
+          "score": 81,
+          "selected": true,
+          "title_original": "Linus Torvalds on AI-assisted kernel contributions"
         },
         {
-          "title": "超18.1万条AI会议录音在笔记应用中暴露",
-          "detail": "一款笔记应用被发现泄露逾18.1万条 AI 会议录音并可被公开访问，用户隐私与会议内容面临风险。",
-          "score": 74,
-          "title_original": "HackerNews Top · Over 181,000 AI meeting recordings left wide open in note taking app"
-        },
-        {
-          "title": "Docker推出面向AI代理的一次性隔离沙箱",
-          "detail": "Docker 发布可丢弃的隔离沙箱环境，专为运行 AI 代理设计，以提升执行安全与隔离性。",
-          "score": 72,
-          "title_original": "HackerNews Top · Docker Sandboxes – Disposable, isolated sandboxes for AI agents"
-        },
-        {
-          "title": "HackerNews Top · Mistral Patent for \"Code implemented tool calls\"",
+          "id": "a6dd454ec43d",
+          "title": "AI-assisted PCB design for KiCad 10",
+          "url": "https://github.com/mixelpixx/Konnect",
           "detail": "",
-          "score": 63
-        },
-        {
-          "title": "HackerNews Top · OpenAI's letter to Governor Abbott on responsible AI infrastructure in Texas",
-          "detail": "",
-          "score": 48
+          "source": "HackerNews Top",
+          "tier": "",
+          "tags": [],
+          "published_at": null,
+          "links": [
+            {
+              "label": "讨论",
+              "url": "https://news.ycombinator.com/item?id=50085553"
+            }
+          ],
+          "meta": {
+            "points": 50
+          },
+          "score": 66,
+          "selected": true
         }
       ]
     }
   ],
   "events": [
     {
-      "title": "月之暗面 Kimi K3 登顶全球榜单 彭博社称美国 AI 领先认知被打破",
-      "score": 88,
-      "section": "国内公司动态",
+      "id": "9d251ac6836a",
+      "title": "Meta 发布 Muse Spark Open 开放权重前沿多模态 MoE 模型",
+      "url": "https://huggingface.co/blog/meta-muse-spark-open",
+      "score": 85,
+      "section": "国际公司动态",
       "source_count": 2,
       "sources": [
         {
-          "title": "月之暗面 Kimi K3 登顶全球榜单 彭博社称美国 AI 领先认知被打破",
-          "section": "国内公司动态",
-          "score": 88
+          "id": "9d251ac6836a",
+          "title": "Meta 发布 Muse Spark Open 开放权重前沿多模态 MoE 模型",
+          "section": "国际公司动态",
+          "score": 85,
+          "source": "Hugging Face",
+          "url": "https://huggingface.co/blog/meta-muse-spark-open"
         },
         {
-          "title": "Kimi K3 登顶全球榜单 彭博社称美国 AI 领先中国认知被打破",
-          "section": "国内 AI 新闻",
-          "score": 83
+          "id": "7543df857d57",
+          "title": "Meta发布Muse Spark Open 加入开源权重模型竞赛",
+          "section": "国际 AI 新闻",
+          "score": 84,
+          "source": "The Decoder",
+          "url": "https://the-decoder.com/muse-spark-open-is-metas-answer-to-qwen-glm-and-kimi-in-the-open-weight-race/"
         }
       ]
     },
     {
-      "title": "零一万物大模型开放平台将逐步停止面向用户提供在线体验、API 调用及充值等相关服务",
-      "score": 66,
-      "section": "国内 AI 新闻",
+      "id": "e925c3137a8a",
+      "title": "Anthropic 向 METR 开放员工级权限接受审查",
+      "url": "https://techcrunch.com/2026/10/15/anthropic-is-letting-metr-researchers-look-under-the-hood-with-employee-level-access/",
+      "score": 78,
+      "section": "国际 AI 新闻",
       "source_count": 2,
       "sources": [
         {
-          "title": "零一万物大模型开放平台将逐步停止面向用户提供在线体验、API 调用及充值等相关服务",
-          "section": "国内 AI 新闻",
-          "score": 66
+          "id": "e925c3137a8a",
+          "title": "Anthropic 向 METR 开放员工级权限接受审查",
+          "section": "国际 AI 新闻",
+          "score": 78,
+          "source": "TechCrunch",
+          "url": "https://techcrunch.com/2026/10/15/anthropic-is-letting-metr-researchers-look-under-the-hood-with-employee-level-access/"
         },
         {
-          "title": "零一万物 · 零一万物大模型开放平台将逐步停止面向用户提供在线体验、API 调用及充值等相关服务",
-          "section": "国内公司动态",
-          "score": 60
+          "id": "8e4016e71b16",
+          "title": "Anthropic 给予 METR 内部权限审计其模型与安全实践",
+          "section": "国际 AI 新闻",
+          "score": 72,
+          "source": "The Decoder",
+          "url": "https://the-decoder.com/anthropic-gives-metr-inside-access-to-audit-its-ai-models-and-safety-practices/"
         }
       ]
     },
     {
-      "title": "阿里 通义千问 · AI 大模型周榜：阿里 qwen3.8-max 冲进综合榜 Top 6，国产多模型表现亮眼",
-      "score": 54,
-      "section": "国内公司动态",
+      "id": "0b4a2a6e636a",
+      "title": "黑森林实验室发布 FLUX 3 Image Klein 图像模型",
+      "url": "https://the-decoder.com/black-forest-labs-open-weights-image-model-flux-3-image-klein-runs-on-consumer-gpus-with-just-8-gb-of-vram/",
+      "score": 72,
+      "section": "国际 AI 新闻",
       "source_count": 2,
       "sources": [
         {
-          "title": "阿里 通义千问 · AI 大模型周榜：阿里 qwen3.8-max 冲进综合榜 Top 6，国产多模型表现亮眼",
-          "section": "国内公司动态",
-          "score": 54
+          "id": "0b4a2a6e636a",
+          "title": "黑森林实验室发布 FLUX 3 Image Klein 图像模型",
+          "section": "国际 AI 新闻",
+          "score": 72,
+          "source": "The Decoder",
+          "url": "https://the-decoder.com/black-forest-labs-open-weights-image-model-flux-3-image-klein-runs-on-consumer-gpus-with-just-8-gb-of-vram/"
         },
         {
-          "title": "AI 大模型周榜：阿里 qwen3.8-max 冲进综合榜 Top 6，国产多模型表现亮眼",
-          "section": "国内 AI 新闻",
-          "score": 48
+          "id": "3733c75a28bf",
+          "title": "Welcome FLUX.3 Image Klein in Diffusers",
+          "section": "国际公司动态",
+          "score": 62,
+          "source": "Hugging Face",
+          "url": "https://huggingface.co/blog/flux-3"
         }
       ]
     }
   ],
   "meta": {
-    "total_items": 43,
+    "total_items": 63,
     "scored": true,
-    "generated_at": "2026-10-16T21:49:23"
+    "generated_at": "2026-10-16T22:19:30"
   }
 }
