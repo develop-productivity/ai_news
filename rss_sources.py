@@ -56,7 +56,7 @@ def clean_text(raw: str, max_len: int = 400) -> str:
     text = html.unescape(text)
     text = re.sub(r"\s+", " ", text).strip()
     # Substack/WordPress 常见尾巴
-    text = re.sub(r"\s*(The post .+ appeared first on .+|Continue reading.*|Read more.*)$", "", text)
+    text = re.sub(r"\s*(The (?:post|article) .+ appeared first on .+|Continue reading.*|Read more.*)$", "", text)
     if len(text) > max_len:
         text = text[:max_len].rsplit(" ", 1)[0] + "…"
     return text

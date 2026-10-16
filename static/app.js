@@ -266,8 +266,15 @@
       }
     });
 
-    // 深链接：/#item=<id>
-    var m = location.hash.match(/^#item=([\w-]+)/);
-    if (m && DATA.items[m[1]]) open({ type: 'item', key: m[1] }, document.querySelector('[data-open-item="' + m[1] + '"]'));
+    // 深链接：/#item=<id>（首次加载，以及页面已打开时地址栏里改 hash）
+    function openFromHash() {
+      var m = location.hash.match(/^#item=([\w-]+)/);
+      if (!m || !DATA.items[m[1]]) return;
+      if (!modal.hidden && stack.length && stack[stack.length - 1].key === m[1]) return;
+      if (!modal.hidden) { open({ type: 'item', key: m[1] }); return; }
+      open({ type: 'item', key: m[1] }, document.querySelector('[data-open-item="' + m[1] + '"]'));
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
   });
 })();
