@@ -16,7 +16,7 @@
   {% else %}
   <div class="history-list">
     {% for d in dates %}
-    <a href="/archive/{{ d.date }}" class="history-item">
+    <a href="{{ base }}/archive/{{ d.date }}" class="history-item">
       <span class="history-date">{{ d.date }}</span>
       <span class="history-meta">{{ d.total_items }} 条 · {{ d.sections }} 个板块</span>
       <span class="history-arrow">→</span>

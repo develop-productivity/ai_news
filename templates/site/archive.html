@@ -3,7 +3,7 @@
 {% block title %}{{ data.date_formatted }} · AI NEWS{% endblock %}
 {% block body %}
 <div class="hero">
-  <p class="hero-kicker"><a href="/history" class="back-link">← 返回历史</a></p>
+  <p class="hero-kicker"><a href="{{ base }}/history" class="back-link">← 返回历史</a></p>
   <h1>{{ data.date_formatted }}{% if data.weekday %} · {{ data.weekday }}{% endif %}</h1>
   <p class="hero-desc">该日 AI 行业日报存档。</p>
 </div>

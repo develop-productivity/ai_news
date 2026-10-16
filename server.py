@@ -45,7 +45,20 @@ app.add_middleware(
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
+def _base_context(request: Request) -> dict:
+    return {"base": request.state.base}
+
+
+templates = Jinja2Templates(directory=str(TEMPLATE_DIR), context_processors=[_base_context])
+
+
+@app.middleware("http")
+async def mount_prefix(request: Request, call_next):
+    """反向代理挂在子路径下（如 /news/）时，nginx 传 X-Forwarded-Prefix，页面内链接据此加前缀。
+    直接访问或挂在独立域名下时前缀为空。"""
+    prefix = request.headers.get("x-forwarded-prefix", "").strip().rstrip("/")
+    request.state.base = prefix if prefix.startswith("/") else ""
+    return await call_next(request)
 
 
 def _parse_time(value):

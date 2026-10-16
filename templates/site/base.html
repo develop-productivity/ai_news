@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}AI 行业日报{% endblock %}</title>
   <meta name="description" content="每日自动聚合 AI 行业资讯，经 LLM 评分排序。">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="{{ base }}/static/style.css">
   {% block head %}{% endblock %}
 </head>
 <body>
   <header class="site-header">
     <div class="site-header-inner">
-      <a href="/" class="logo">AI <span class="accent">NEWS</span></a>
+      <a href="{{ base }}/" class="logo">AI <span class="accent">NEWS</span></a>
       <nav class="nav-links">
-        <a href="/" class="{% if active == 'home' %}active{% endif %}">首页</a>
-        <a href="/hot" class="{% if active == 'hot' %}active{% endif %}">热门</a>
-        <a href="/history" class="{% if active == 'history' %}active{% endif %}">历史</a>
-        <a href="/about" class="{% if active == 'about' %}active{% endif %}">关于</a>
+        <a href="{{ base }}/" class="{% if active == 'home' %}active{% endif %}">首页</a>
+        <a href="{{ base }}/hot" class="{% if active == 'hot' %}active{% endif %}">热门</a>
+        <a href="{{ base }}/history" class="{% if active == 'history' %}active{% endif %}">历史</a>
+        <a href="{{ base }}/about" class="{% if active == 'about' %}active{% endif %}">关于</a>
       </nav>
       <div class="header-spacer"></div>
       {% if data and data.date_formatted %}
@@ -30,15 +30,19 @@
 
   <footer class="site-footer">
     <div class="site-footer-inner">
-      <a href="/">AI NEWS</a>
+      <a href="{{ base }}/">AI NEWS</a>
       <span class="sep">·</span>
-      <a href="/api/v1/ai_news/news">API</a>
+      <a href="{{ base }}/api/v1/ai_news/news">API</a>
       <span class="sep">·</span>
-      <a href="/history">历史</a>
+      <a href="{{ base }}/history">历史</a>
       <span class="sep">·</span>
-      <a href="/about">关于</a>
+      <a href="{{ base }}/about">关于</a>
       <span class="sep">·</span>
-      <a href="/api/v1/ai_news/sources">信源状态</a>
+      <a href="{{ base }}/api/v1/ai_news/sources">信源状态</a>
+      {% if base %}
+      <span class="sep">·</span>
+      <a href="/">zero to tech</a>
+      {% endif %}
     </div>
   </footer>
 
@@ -57,7 +61,7 @@
     </div>
   </div>
   <script type="application/json" id="news-data">{{ (payload or {}) | tojson }}</script>
-  <script src="/static/app.js"></script>
+  <script src="{{ base }}/static/app.js"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
