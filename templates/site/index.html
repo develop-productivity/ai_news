@@ -1,0 +1,157 @@
+{% extends "site/base.html" %}
+{% block title %}AI 行业日报 · {{ data.date_formatted }}{% endblock %}
+{% block body %}
+<div class="hero">
+  <p class="hero-kicker">AI DAILY NEWS</p>
+  <h1>AI 行业日报</h1>
+  {% if data.date_formatted %}
+  <p class="hero-date">{{ data.date_formatted }} · {{ data.weekday }}</p>
+  {% endif %}
+  <p class="hero-desc">每日自动聚合 GitHub · HuggingFace · arXiv · TechCrunch · HN · 36氪 等来源的 AI 资讯，经 LLM 评分排序。</p>
+</div>
+
+<div class="content">
+  {% if not data or not data.sections %}
+  <div class="empty-state">
+    <h2>暂无数据</h2>
+    <p>请先运行: python3 ai_news_aggregator.py → python3 produce_news.py</p>
+  </div>
+  {% else %}
+
+  {# 今日热门板块 #}
+  {% if data.sections and data.sections[0].accent == 'hot' %}
+  <div class="hot-section">
+    <div class="hot-section-title">🔥 今日热门</div>
+    <div class="hot-grid">
+      {% for item in data.sections[0]['items'] %}
+      <div class="hot-card">
+        {% if item.score %}
+        <span class="hot-score">{{ item.score }}</span>
+        {% endif %}
+        <div class="hot-card-title">{{ item.title }}</div>
+        {% if item.source_section %}
+        <div class="hot-card-source">来源: {{ item.source_section }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# 事件聚类 #}
+  {% if data.events and data.events|length > 0 %}
+  <div class="events-section">
+    <div class="hot-section-title">🔗 同事件多源</div>
+    <div class="event-list">
+      {% for ev in data.events %}
+      <div class="event-item">
+        <div class="event-badge">{{ ev.source_count }}源</div>
+        <div class="event-content">
+          <div class="event-title">{{ ev.title }}</div>
+          <div class="event-sources">
+            {% for src in ev.sources %}
+            <span class="event-source-tag">{{ src.section }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# 常规板块 #}
+  <div class="sections-grid-wrap">
+    {% for sec in data.sections %}
+      {% if sec.accent != 'hot' %}
+      <div class="section-card accent-{{ sec.accent }}" onclick="openSection('{{ sec.label }}')">
+        <div class="section-card-accent"></div>
+        <div class="section-card-header">
+          <span class="section-card-icon">
+            {% if sec.icon == 'star' %}★{% elif sec.icon == 'diamond' %}◆{% elif sec.icon == 'building' %}■{% elif sec.icon == 'globe' %}●{% elif sec.icon == 'message-circle' %}○{% elif sec.icon == 'flame' %}🔥{% else %}●{% endif %}
+          </span>
+          <span class="section-card-title">{{ sec.label }}</span>
+          <span class="section-card-count">{{ sec['items'] | length }}</span>
+        </div>
+        <div class="section-card-body">
+          {% for item in sec['items'][:4] %}
+          <div class="section-item">
+            <span class="section-item-dot"></span>
+            <span class="section-item-text">{{ item.title }}</span>
+            {% if item.score and item.score > 0 %}
+            <span class="section-item-score">{{ item.score }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% if sec['items']|length > 4 %}
+          <div class="section-item-more">+{{ sec['items']|length - 4 }} 更多...</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% endif %}
+</div>
+
+{# Section Modal #}
+<div id="sectionModal" class="modal-backdrop" style="display:none">
+  <div class="modal" id="sectionModalContent">
+    <div class="modal-header">
+      <div class="modal-titles">
+        <span class="modal-icon" id="modalIcon">●</span>
+        <h2 id="modalTitle"></h2>
+      </div>
+      <button class="modal-close" onclick="closeSection()" aria-label="关闭">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// Section data for modal
+const sectionData = {};
+{% for sec in data.sections if sec.accent != 'hot' %}
+sectionData[{{ sec.label | tojson }}] = {
+  icon: {{ sec.icon | tojson }},
+  accent: {{ sec.accent | tojson }},
+  items: [
+    {% for item in sec['items'] %}
+    { title: {{ item.title | tojson }}, detail: {{ (item.detail or '') | tojson }}, score: {{ item.score or 0 }} },
+    {% endfor %}
+  ]
+};
+{% endfor %}
+
+function openSection(label) {
+  const sec = sectionData[label];
+  if (!sec) return;
+  const iconMap = {star:'★',diamond:'◆',building:'■',globe:'●','message-circle':'○',flame:'🔥'};
+  document.getElementById('modalIcon').textContent = iconMap[sec.icon] || '●';
+  document.getElementById('modalTitle').textContent = label;
+  const body = document.getElementById('modalBody');
+  body.innerHTML = sec.items.map(item => `
+    <div class="modal-item">
+      <div class="modal-item-title">${item.title}</div>
+      ${item.score > 0 ? `<span class="modal-item-score">${item.score}</span>` : ''}
+      ${item.detail ? `<div class="modal-item-detail">${item.detail}</div>` : ''}
+    </div>
+  `).join('');
+  const modal = document.getElementById('sectionModal');
+  modal.style.display = 'flex';
+  document.addEventListener('keydown', modalEscHandler);
+}
+
+function closeSection() {
+  document.getElementById('sectionModal').style.display = 'none';
+  document.removeEventListener('keydown', modalEscHandler);
+}
+
+function modalEscHandler(e) { if (e.key === 'Escape') closeSection(); }
+
+document.getElementById('sectionModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSection();
+});
+</script>
+{% endblock %}

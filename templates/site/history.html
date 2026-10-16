@@ -1,0 +1,28 @@
+{% extends "site/base.html" %}
+{% block title %}历史日报 · AI NEWS{% endblock %}
+{% block body %}
+<div class="hero">
+  <p class="hero-kicker">ARCHIVE</p>
+  <h1>历史日报</h1>
+  <p class="hero-desc">查看过去每天的 AI 行业日报。</p>
+</div>
+
+<div class="content">
+  {% if not dates or dates|length == 0 %}
+  <div class="empty-state">
+    <h2>暂无历史记录</h2>
+    <p>运行 produce_news.py 后会自动保存每日快照。</p>
+  </div>
+  {% else %}
+  <div class="history-list">
+    {% for d in dates %}
+    <a href="/archive/{{ d.date }}" class="history-item">
+      <span class="history-date">{{ d.date }}</span>
+      <span class="history-meta">{{ d.total_items }} 条 · {{ d.sections }} 个板块</span>
+      <span class="history-arrow">→</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

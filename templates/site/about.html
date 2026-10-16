@@ -1,0 +1,71 @@
+{% extends "site/base.html" %}
+{% block title %}关于 · AI NEWS{% endblock %}
+{% block body %}
+<div class="hero">
+  <p class="hero-kicker">ABOUT</p>
+  <h1>关于 AI NEWS</h1>
+  <p class="hero-desc">一个自动采集、评分、排序 AI 行业资讯的独立站点。</p>
+</div>
+
+<div class="content">
+  <div class="about-content">
+
+    <div class="about-section">
+      <h2>这是什么</h2>
+      <p>AI NEWS 是一个全自动的 AI 行业日报系统。每天从 9+ 个来源抓取 AI 相关资讯，经过滤精炼后，由 LLM 对每条新闻评分排序，最终生成结构化的日报。</p>
+      <p>它既是个人网站的组成部分（通过 API 供前端调用），也是一个可独立访问的网站。</p>
+    </div>
+
+    <div class="about-section">
+      <h2>工作流程</h2>
+      <div class="flow-diagram">
+        <div class="flow-step"><span>📡</span> 采集 — 从 GitHub / HF / arXiv / TechCrunch / HN / 36氪 等来源抓取</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><span>🔍</span> 精炼 — 过滤噪音、去重、时效性检查</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><span>📊</span> 评分 — LLM 对每条新闻打 0-100 分（无 API 时回退到关键词评分）</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><span>🔥</span> 热门 — 提取 Top 6 组成"今日热门"板块</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><span>🌐</span> 发布 — 生成 JSON API + 独立网站</div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <h2>数据来源</h2>
+      <ul>
+        <li>GitHub Trending — AI 相关热门仓库</li>
+        <li>HuggingFace Daily Papers — 每日精选论文</li>
+        <li>HuggingFace Models — 热门模型排行榜</li>
+        <li>arXiv (cs.IR) — 搜索/广告/推荐论文</li>
+        <li>TechCrunch / Ars Technica / The Verge — 国际 AI 新闻</li>
+        <li>HackerNews / Lobsters — 社区热点</li>
+        <li>36氪 / IT之家 — 国内 AI 新闻</li>
+        <li>各大模型公司博客 — OpenAI / Anthropic / Google / DeepSeek / 智谱 等</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h2>API 接口</h2>
+      <ul>
+        <li><code>GET /api/v1/ai_news/news</code> — 结构化日报 JSON</li>
+        <li><code>GET /api/v1/ai_news/news?date=YYYY-MM-DD</code> — 按日期查询</li>
+        <li><code>GET /api/v1/ai_news/hot</code> — 热门条目 JSON（按评分排序）</li>
+        <li><code>GET /api/v1/ai_news/dates</code> — 可用日期列表</li>
+        <li><code>GET /api/v1/ai_news/cards</code> — HTML 卡片</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h2>技术栈</h2>
+      <ul>
+        <li>Python + FastAPI — 后端 API 与网站</li>
+        <li>Jinja2 — SSR 模板渲染</li>
+        <li>OpenAI 兼容 API — LLM 评分（DeepSeek / Qwen / GLM 等）</li>
+        <li>关键词启发式 — 无 LLM 时的回退评分</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 """
-AI 日报生产者 — 过滤精炼 + JSON 输出
-======================================
-流程: 原始日报 → 精炼版 Markdown → 结构化 JSON
+AI 日报生产者 — 过滤精炼 + LLM 评分 + 结构化 JSON 输出
+=========================================================
+流程: 原始日报 → 过滤精炼 → LLM/关键词评分 → 热门板块 → 结构化 JSON
 
 用法:
   python3 produce_news.py                 # 读取 output/ai_news.md，滚动覆盖输出
   python3 produce_news.py --date 2026-08-10  # 用指定日期写入 JSON 元数据
+  python3 produce_news.py --no-score       # 跳过评分步骤
 """
 
 import os, re, sys, json, datetime, glob
@@ -39,7 +40,6 @@ def _date_from_raw(text, fallback=None):
 # ================================================================
 
 def find_source(date_str=None):
-    """优先读滚动文件 output/ai_news.md；兼容旧的日期文件名。"""
     if RAW_MD_PATH.exists():
         text = RAW_MD_PATH.read_text(encoding="utf-8")
         return str(RAW_MD_PATH), _date_from_raw(text, date_str)
@@ -70,13 +70,9 @@ def find_source(date_str=None):
 # ================================================================
 
 def refine(raw_text):
-    """去掉不适合展示的内容，保留精华。"""
     lines = raw_text.split("\n")
-
-    # 要删除的整块
     removes = []
 
-    # YAML frontmatter
     if lines and lines[0].strip() == "---":
         fm_end = -1
         for i in range(1, len(lines)):
@@ -86,7 +82,6 @@ def refine(raw_text):
         if fm_end > 0:
             removes.append((0, fm_end + 1))
 
-    # HTML 注释块
     for i, l in enumerate(lines):
         if l.strip().startswith("<!--"):
             comment_end = -1
@@ -97,7 +92,6 @@ def refine(raw_text):
             if comment_end > 0:
                 removes.append((i, comment_end + 1))
 
-    # 目录区
     in_toc = False
     toc_start = -1
     for i, l in enumerate(lines):
@@ -109,7 +103,6 @@ def refine(raw_text):
             in_toc = False
             break
 
-    # 页脚
     last_sep = -1
     for i, l in enumerate(lines):
         if l.strip() == "---":
@@ -124,31 +117,24 @@ def refine(raw_text):
         for j in range(rs, re_):
             drop_line.add(j)
 
-    # 行级过滤
     kept_lines = []
     for i, l in enumerate(lines):
         if i in drop_line:
             continue
         stripped = l.strip()
-
-        # 元数据行
         if stripped.startswith(">") and any(kw in stripped for kw in
             ["数据来源", "自动聚合", "生成时间"]):
             continue
         if any(stripped.startswith(c) for c in ["\U0001f916", "\U0001f4c5", "\U0001f310"]):
             continue
-        # 空表格
         if re.match(r'^\|[\s\-:]+\|$', stripped):
             continue
-        # 表格数据
         if stripped.startswith("|") and stripped.endswith("|"):
             continue
-
         kept_lines.append(l)
 
     text = "\n".join(kept_lines)
 
-    # 去掉 HuggingFace 模型排行榜
     text = re.sub(
         r'## [^\n]*模型排行[^\n]*\n.*?(?=^## )',
         '',
@@ -156,7 +142,6 @@ def refine(raw_text):
         flags=re.DOTALL | re.MULTILINE,
     )
 
-    # 合并多余空行
     text = re.sub(r'\n{3,}', '\n\n', text)
     text = text.strip() + "\n"
     return text
@@ -166,10 +151,6 @@ def refine(raw_text):
 # 3. 结构化 JSON 输出
 # ================================================================
 
-
-
-# ── 时效性过滤 ──
-# 关键词模式：仅对无法提取真实日期的条目生效
 _STALE_PATTERNS = [
     re.compile(r"据[悉传称]"),
     re.compile(r"传[闻言]"),
@@ -178,7 +159,6 @@ _STALE_PATTERNS = [
 
 MAX_AGE_DAYS = 7
 
-# ── 主题过滤：游戏 / 明显非 AI 噪声 ──
 _OFFTOPIC_PATTERNS = [
     re.compile(r"游戏|手游|网游|电竞|游戏联动"),
     re.compile(r"米哈游|无畏契约|原神|王者荣耀|和平精英"),
@@ -189,24 +169,18 @@ _OFFTOPIC_PATTERNS = [
 
 
 def _extract_item_date(text):
-    """从条目文本中提取日期，返回 datetime.date 或 None。"""
-    # 1. 投稿日期: 2026-06-11
     m = re.search(r"(?:投稿日期|发布日期)[^0-9]*(\d{4}-\d{2}-\d{2})", text)
     if m:
         try:
             return datetime.date.fromisoformat(m.group(1))
         except ValueError:
             pass
-
-    # 2. URL 中的日期 /2026/06/12/
     m = re.search(r"/(20\d{2})/(\d{2})/(\d{2})/", text)
     if m:
         try:
             return datetime.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
         except ValueError:
             pass
-
-    # 3. 中文早报日期：IT早报 0808 / 早报0808（用报告年份推断）
     m = re.search(r"(?:IT)?早报\s*(\d{2})(\d{2})", text)
     if m and hasattr(_extract_item_date, "_report_year"):
         try:
@@ -215,17 +189,10 @@ def _extract_item_date(text):
             )
         except ValueError:
             pass
-
-    # 注意: 不从 arXiv ID (如 2606.XXXXX) 提取日期，
-    # 因为只有月份精度，会导致同月论文被误判为过期。
-    # 没有精确日期的条目默认保留。
-
     return None
 
 
 def _is_stale(text, report_date_str=None):
-    """检查条目是否时效性不足。优先用真实日期，无日期时回退到关键词。"""
-    # 尝试提取真实日期
     if report_date_str:
         try:
             report_date = datetime.date.fromisoformat(report_date_str)
@@ -236,12 +203,9 @@ def _is_stale(text, report_date_str=None):
                 return age > MAX_AGE_DAYS
         except ValueError:
             pass
-
-    # 无日期 → 关键词兜底
     return any(p.search(text) for p in _STALE_PATTERNS)
 
 
-# 短英文词加词边界，避免 Tail/email 误命中 ai
 _AI_TOPIC_RE = re.compile(
     r"(?<![a-z0-9])(?:ai|aigc|llm|gpt|glm|rag|mlx|nlp|cv)(?![a-z0-9])|"
     r"claude|gemini|openai|anthropic|deepseek|qwen|kimi|mistral|llama|agent|"
@@ -253,10 +217,8 @@ _AI_TOPIC_RE = re.compile(
 
 
 def _is_offtopic(text):
-    """游戏相关或明显非 AI 展示噪声。"""
     if any(p.search(text) for p in _OFFTOPIC_PATTERNS):
         return True
-    # 论坛灌水/长独白（少数派等偶发混入）
     plain = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
     plain = re.sub(r"^###\s*\d+\.\s*", "", plain).strip()
     if len(plain) > 90 and ("我是" in plain[:30] or plain.startswith("[")):
@@ -267,8 +229,8 @@ def _is_offtopic(text):
 def _is_ai_topic(text):
     return bool(_AI_TOPIC_RE.search(text or ""))
 
+
 def refined_to_json(refined_text, date_str):
-    """从精炼版 Markdown 解析为结构化 JSON。"""
     weekdays = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
     try:
         d = datetime.date.fromisoformat(date_str)
@@ -313,10 +275,8 @@ def refined_to_json(refined_text, date_str):
         if not cfg:
             continue
 
-        # 社区 / GitHub 板块强制 AI 主题（源站首页易混入无关内容）
         require_ai = cfg.get("accent") in {"oss", "github"}
 
-        # 按 ### 分组为条目，整条做日期检查
         entries = []
         current = []
         for line in sec_lines[1:]:
@@ -332,34 +292,21 @@ def refined_to_json(refined_text, date_str):
         if current:
             entries.append(current)
 
-        # 无 ### 结构时，每行独立
         if not entries:
             entries = [[l.strip()] for l in sec_lines[1:] if l.strip()]
 
-        # ── 文本清理 ──
         def clean_md(text):
-            """剥离 Markdown 格式，返回纯文本。"""
-            # [title](url) → title
             text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
-            # **bold** → plain
             text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
-            # *italic* → plain
             text = re.sub(r"\*(.+?)\*", r"\1", text)
-            # `code` → plain
             text = re.sub(r"`(.+?)`", r"\1", text)
-            # 去掉编号前缀
             text = re.sub(r"^\d+\.\s*", "", text)
-            # 去掉 bullet 前缀
             text = re.sub(r"^[-•]\s*", "", text)
-            # 去掉 emoji 前缀标记
             text = re.sub(r"^[\U0001f300-\U0001f9ff\u2600-\u26ff\u2700-\u27bf]+\s*", "", text)
-            # 去掉字段标签 (英文摘要: / 描述: / 摘要: / 内容:)
             text = re.sub(r"^(?:英文摘要|描述|摘要|内容|详情)[:：]\s*", "", text)
-            # 去掉 🔥 热度标记
             text = re.sub(r"\s*🔥\d+", "", text)
             return text.strip()
 
-        # 低价值元数据行，不展示
         META_KEYS = {"链接", "来源", "作者", "投稿日期", "发布日期", "Stars", "语言", "点赞"}
         def is_meta(text):
             clean = clean_md(text)
@@ -375,7 +322,6 @@ def refined_to_json(refined_text, date_str):
             sub = re.match(r"^###\s+(.+)$", first_line)
             if sub:
                 sub_text = sub.group(1).strip()
-                # ### 1. [title](url) → 编号条目（论文/新闻/GitHub）
                 if re.match(r"^\d+\.", sub_text):
                     if _is_offtopic(entry_text):
                         continue
@@ -393,8 +339,6 @@ def refined_to_json(refined_text, date_str):
                     if title:
                         items.append({"title": title[:120], "detail": detail})
                 else:
-                    # ### 分类标题（如 OpenAI、HackerNews Top）
-                    # 下方每个链接/编号都是一个独立条目（按行过滤）
                     cat = clean_md(sub_text)
                     for line in entry[1:]:
                         if is_meta(line):
@@ -409,7 +353,6 @@ def refined_to_json(refined_text, date_str):
                             full_title = f"{cat} · {clean}" if cat else clean
                             items.append({"title": full_title[:120], "detail": ""})
             else:
-                # 无 ### 结构，用第一行做 title
                 if _is_offtopic(entry_text):
                     continue
                 if require_ai and not _is_ai_topic(entry_text):
@@ -435,18 +378,92 @@ def refined_to_json(refined_text, date_str):
 
 
 # ================================================================
+# 4. 评分 + 热门板块
+# ================================================================
+
+def apply_scoring(data):
+    """对 JSON 数据中的条目评分、写作，生成"今日热门"板块。"""
+    try:
+        from llm_score import score_sections, build_hot_section
+    except ImportError as e:
+        print(f"  [评分] 跳过（无法导入 llm_score: {e}）")
+        return data
+
+    sections = data.get("sections", [])
+    print("\n📊 评分阶段...")
+    sections = score_sections(sections)
+
+    # LLM 写作：为高分条目生成中文标题/摘要
+    try:
+        from llm_write import write_sections
+        print("\n✍️ 写作阶段...")
+        sections = write_sections(sections)
+    except ImportError as e:
+        print(f"  [写作] 跳过（无法导入 llm_write: {e}）")
+
+    # 去重/聚类：跨板块合并同一事件
+    try:
+        from dedup import dedup_sections
+        print("\n🔗 去重/聚类...")
+        sections, events = dedup_sections(sections)
+        if events:
+            data["events"] = events
+    except ImportError as e:
+        print(f"  [去重] 跳过（无法导入 dedup: {e}）")
+
+    hot = build_hot_section(sections, top_n=6)
+    if hot:
+        sections.insert(0, hot)
+        print(f"  [热门] 生成 {len(hot['items'])} 条热门条目")
+
+    data["sections"] = sections
+    data["meta"] = {
+        "total_items": sum(len(s.get("items", [])) for s in sections),
+        "scored": True,
+        "generated_at": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+    }
+
+    # 保存历史快照
+    try:
+        from history import save_snapshot
+        save_snapshot(data)
+    except Exception as e:
+        print(f"  [历史] 保存失败: {e}")
+
+    return data
+
+
+# ================================================================
 # 主入口
 # ================================================================
 
 def main():
     import argparse
-    p = argparse.ArgumentParser(description="AI 日报精炼 → Markdown + JSON")
-    p.add_argument("--date", help="覆盖写入 JSON 的日期 YYYY-MM-DD（默认从原文提取）")
+    p = argparse.ArgumentParser(description="AI 日报精炼 → Markdown + JSON + 评分")
+    p.add_argument("--date", help="覆盖写入 JSON 的日期 YYYY-MM-DD")
+    p.add_argument("--no-score", action="store_true", help="跳过评分步骤")
+    p.add_argument("--rescore", action="store_true", help="从现有 news.json 重新评分（不需要 raw markdown）")
     args = p.parse_args()
 
     ensure_output_dir()
 
-    # 1. 读取源文件
+    # --rescore: 从现有 news.json 重新评分
+    if args.rescore:
+        if not NEWS_JSON_PATH.exists():
+            print("❌ 未找到 news.json，无法重新评分")
+            return
+        print("🔄 重新评分模式：从现有 news.json 评分")
+        with open(NEWS_JSON_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+        # 去掉旧的 hot 板块和 meta
+        data["sections"] = [s for s in data.get("sections", []) if s.get("accent") != "hot"]
+        data.pop("meta", None)
+        data = apply_scoring(data)
+        with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"   ✅ news.json 已更新 ({len(data['sections'])} 个板块)")
+        return
+
     src_path, date_str = find_source(args.date)
     if not src_path:
         print("❌ 未找到日报文件，请先运行: python3 ai_news_aggregator.py")
@@ -460,16 +477,17 @@ def main():
 
     print(f"📄 读取: {os.path.basename(src_path)} — {len(raw):,} chars")
 
-    # 2. 精炼（滚动覆盖）
     print("🔍 精炼中...")
     refined = refine(raw)
 
     REFINED_MD_PATH.write_text(refined, encoding="utf-8")
     print(f"   ✅ refined.md → {REFINED_MD_PATH} ({len(refined):,} chars)")
 
-    # 3. JSON 输出（滚动覆盖）
     print("📊 生成 JSON...")
     data = refined_to_json(refined, date_str)
+
+    if not args.no_score:
+        data = apply_scoring(data)
 
     with open(NEWS_JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
@@ -479,13 +497,12 @@ def main():
     if removed:
         print(f"   🧹 已清理旧日期产物: {len(removed)} 个")
 
-    # 4. 输出概要
     print(f"\n{'='*55}")
     print(f"  📅 {date_str} · 滚动单份产物")
     for sec in data["sections"]:
         print(f"  {sec['icon']} {sec['label']}: {len(sec['items'])} 条")
     print(f"{'='*55}")
-    print(f"  💡 下一步: python3 generate_html.py 生成卡片 HTML")
+    print(f"  💡 下一步: python3 server.py 启动网站")
     print(f"{'='*55}")
 
 

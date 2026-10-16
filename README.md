@@ -1,45 +1,57 @@
 # AI 日报系统
 
-自动采集 AI 行业资讯，经精炼过滤后输出结构化 JSON，通过 FastAPI 接口供前端项目请求展示。
-
-产物采用**滚动单份**：每次运行覆盖同一组文件，不按日期堆积，节省磁盘。
-
----
+自动采集 AI 行业资讯，经 LLM 评分排序后输出结构化 JSON，通过 FastAPI 接口供前端项目调用，同时提供独立可访问的网站。
 
 ## 项目结构
 
 ```
 ai_news/
-├── ai_news_aggregator.py     # 采集：9 来源 → output/ai_news.md
-├── produce_news.py           # 精炼：过滤 + 时效性 + output/news.json
+├── ai_news_aggregator.py     # 采集：9+ 来源 → output/ai_news.md
+├── produce_news.py           # 精炼 + 评分 + 热门板块 → output/news.json
+├── llm_score.py              # LLM 评分模块（支持 OpenAI 兼容 API，无 key 回退关键词评分）
 ├── generate_html.py          # 渲染：refined.md → output/card.html
-├── server.py                 # API 服务 (FastAPI)
+├── server.py                 # API 服务 + 独立网站 (FastAPI + Jinja2 SSR)
 ├── paths.py                  # 滚动产物路径与旧文件清理
+├── prompts/
+│   └── score.txt             # 评分提示词（预留）
 ├── templates/
-│   └── news_cards.html
+│   ├── news_cards.html       # 1920×1080 卡片模板
+│   └── site/
+│       ├── base.html         # 网站基模板（导航 + 主题切换）
+│       ├── index.html        # 首页（今日热门 + 板块卡片）
+│       ├── hot.html          # 热门排行（按分数分档列表）
+│       └── about.html        # 关于页面
+├── static/
+│   ├── style.css             # 网站样式（亮/暗主题）
+│   └── app.js                # 主题切换交互
 ├── output/                   # 运行时产物（滚动覆盖）
-│   ├── ai_news.md            #   原始日报
-│   ├── refined.md            #   精炼版
-│   ├── news.json             #   API 数据源（可提交一份种子）
-│   └── card.html             #   HTML 卡片（可选）
+│   └── news.json             #   API 数据源
+├── .env.example              # LLM API 配置示例
 ├── requirements.txt
 └── README.md
 ```
 
----
-
 ## 数据流
 
 ```
-ai_news_aggregator.py     produce_news.py      server.py
-采集 9 个来源     →       过滤 + 精炼    →     FastAPI 提供接口
+ai_news_aggregator.py          produce_news.py           server.py
+采集 9+ 来源          →        过滤 + 精炼          →    FastAPI API + 独立网站
                                     ↓
-                              output/news.json（覆盖写入）
+                         llm_score.py 评分
                                     ↓
-                    前端 fetch /api/v1/ai_news/news
+                         热门板块生成
+                                    ↓
+                         output/news.json
 ```
 
-日期写在 JSON 的 `date` 字段里；磁盘上始终只有一份当前结果。
+### 评分
+
+每条新闻按"AI 读者注意力价值"打 0-100 分：
+
+- **LLM 模式**（配置 `LLM_API_KEY` 后）：调用 OpenAI 兼容 API 批量评分
+- **关键词模式**（未配置 API key 时）：基于关键词命中数启发式评分
+
+评分后按分数排序，提取 Top 6 组成"今日热门"板块。
 
 ### 采集来源
 
@@ -47,33 +59,25 @@ ai_news_aggregator.py     produce_news.py      server.py
 |------|------|
 | GitHub Trending | github.com/trending（AI 相关过滤） |
 | HF Daily Papers | huggingface.co/api/daily_papers |
+| HF Models | huggingface.co/api/models（热门模型） |
 | arXiv IR | export.arxiv.org/api/query |
 | 国际新闻 | TechCrunch, Ars Technica, The Verge |
 | 国内新闻 | 36氪, IT之家 |
 | 国际公司 | HuggingFace Blog, Google Research, Anthropic, OpenAI |
 | 国内公司 | DeepSeek, 智谱, 百度, 阿里, 月之暗面... |
-| 社区热点 | HackerNews / Lobsters（AI 主题过滤） |
-
-### 时效性与主题过滤
-
-`produce_news.py`：
-
-- 从条目中提取真实日期，超过 7 天过滤
-- 屏蔽游戏/噪声；社区与 GitHub 板块强制 AI 主题
-
----
+| 社区热点 | HackerNews, Lobsters（AI 主题过滤） |
 
 ## API 接口
 
-部署依赖：**运行时读取 `output/news.json`**。前端（`AiNewsView.jsx`，挂在 `/demos/ai-news`）只请求：
-
-`GET /api/v1/ai_news/news`（不带 date）
-
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/api/v1/ai_news/news` | 当前滚动版 JSON |
-| GET | `/api/v1/ai_news/news?date=YYYY-MM-DD` | 可选校验；与当前 `date` 不一致则 404 |
-| GET | `/api/v1/ai_news/cards` | 当前滚动版 HTML 卡片 |
+| GET | `/` | 独立网站首页 |
+| GET | `/hot` | 热门排行页 |
+| GET | `/about` | 关于页面 |
+| GET | `/api/v1/ai_news/news` | 结构化日报 JSON（滚动版） |
+| GET | `/api/v1/ai_news/news?date=YYYY-MM-DD` | 按日期校验 |
+| GET | `/api/v1/ai_news/hot` | 热门条目 JSON（按评分排序） |
+| GET | `/api/v1/ai_news/cards` | HTML 卡片 |
 | GET | `/api/v1/ai_news/dates` | `{ dates: [当前日期], latest }` |
 
 ### JSON 结构
@@ -85,56 +89,67 @@ ai_news_aggregator.py     produce_news.py      server.py
   "weekday": "星期一",
   "sections": [
     {
+      "label": "今日热门",
+      "icon": "flame",
+      "accent": "hot",
+      "items": [
+        { "title": "...", "detail": "...", "score": 85, "source_section": "国际 AI 新闻" }
+      ]
+    },
+    {
       "label": "GitHub 热门趋势",
       "icon": "star",
       "accent": "github",
       "items": [
-        { "title": "addyosmani/agent-skills", "detail": "Production-grade engineering skills..." }
+        { "title": "addyosmani/agent-skills", "detail": "Production-grade engineering skills...", "score": 47 }
       ]
     }
-  ]
+  ],
+  "meta": {
+    "total_items": 46,
+    "scored": true,
+    "generated_at": "2026-08-10T12:00:00"
+  }
 }
 ```
 
----
+## 配置
+
+复制 `.env.example` 为 `.env` 并填写 LLM API 信息：
+
+```bash
+cp .env.example .env
+# 编辑 .env，填入你的 API key
+```
+
+不配置 `.env` 也能运行，评分会自动回退到关键词启发式模式。
 
 ## 本地开发
 
 ```bash
 cd ai_news
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-# 国内网络可用清华源：
-# pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-# 1. 采集（需要网络）→ 覆盖 output/ai_news.md
+# 安装依赖
+pip install -r requirements.txt
+
+# 1. 采集（需要网络）→ output/ai_news.md
 python3 ai_news_aggregator.py
 
-# 2. 精炼 → 覆盖 output/refined.md + output/news.json
+# 2. 精炼 + 评分 → output/news.json
 python3 produce_news.py
 
-# 3. 启动 API
+# 3. 启动 API + 网站
 python3 server.py
 # → http://127.0.0.1:8001
 ```
 
-前端：
+前端（zero-to-tech）：
 
 ```bash
 cd zero-to-tech/nextjs
-# .env.local
-NEXT_PUBLIC_AI_NEWS_API=http://localhost:8001
-npm run dev
-# 打开 http://localhost:3000/demos/ai-news
+NEXT_PUBLIC_AI_NEWS_API=http://localhost:8001 npm run dev
+# → http://localhost:3000/demos/ai-news
 ```
-
-生产环境常见两种接法：
-
-1. **同源反代**：站点 nginx 把 `/api/v1/ai_news/` 转到 `127.0.0.1:8001`，此时可不设 `NEXT_PUBLIC_AI_NEWS_API`（前端默认相对路径）。
-2. **直连 API 域名**：设置 `NEXT_PUBLIC_AI_NEWS_API=https://api.example.com`，并在 `server.py` 侧放行 CORS。
-
----
 
 ## 服务器部署
 
@@ -142,52 +157,28 @@ npm run dev
 
 | 层级 | 依赖 |
 |------|------|
-| Python | `requirements.txt`（fastapi / uvicorn / requests / bs4 / jinja2） |
-| 运行时数据 | `output/news.json`（仓库可带一份种子；日常由定时任务覆盖） |
-| 前端页面 | **React 运行时请求** `GET /api/v1/ai_news/news`，不是读仓库里的 HTML 静态文件 |
-| `/cards` | 可选；无 `card.html` 时会用 `news.json` 即时渲染 |
-| 系统 | systemd + nginx 反代 `/api/v1/ai_news/` → `127.0.0.1:8001` |
+| Python | `requirements.txt` |
+| LLM（可选） | `.env` 中的 `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` |
+| 运行时数据 | `output/news.json` |
+| 系统 | systemd + nginx 反代 |
 
 ```bash
 # 1) 数据在
 ls output/news.json
 
-# 2) API 在跑（改代码后要重启）
-sudo systemctl restart ai-news-api   # 或你的服务名
-curl -s http://127.0.0.1:8001/api/v1/ai_news/news | head
+# 2) API + 网站在跑
+sudo systemctl restart ai-news-api
 
-# 3) nginx 把 /api/v1/ai_news/ 转到 8001
+# 3) nginx 把 /api/v1/ai_news/ 和网站路径转到 8001
 curl -s https://你的域名/api/v1/ai_news/news | head
-
-# 4) 可选：生成静态卡片页
-.venv/bin/python generate_html.py    # 现在可只凭 news.json 生成
+curl -s https://你的域名/  # 独立网站
 ```
 
-### 1. 安装
-
-```bash
-cd /opt/ai_news
-git clone <repo> .
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 2. 生成 / 更新数据（滚动覆盖）
-
-```bash
-python3 ai_news_aggregator.py
-python3 produce_news.py
-# 可选：python3 generate_html.py
-```
-
-无需重启 API：`server.py` 每次请求读磁盘上的 `news.json`。
-
-### 3. systemd
+### systemd
 
 ```ini
 [Unit]
-Description=AI Daily News API
+Description=AI Daily News API + Website
 After=network.target
 
 [Service]
@@ -201,35 +192,13 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-### 4. Nginx
-
-```nginx
-location /api/v1/ai_news/ {
-    proxy_pass http://127.0.0.1:8001;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-}
-```
-
-### 5. 定时更新（建议）
+### 定时更新
 
 ```bash
-# 每天 7:30 滚动更新
+# 每天 7:30 采集 + 评分
 30 7 * * * cd /opt/ai_news && .venv/bin/python3 ai_news_aggregator.py && .venv/bin/python3 produce_news.py
 ```
 
-日更 / 周更可之后再定；当前脚本按「每次运行覆盖当前份」设计。
+## 向后兼容
 
----
-
-## 故障排查
-
-| 问题 | 解决 |
-|------|------|
-| `No module named 'fastapi'` | `pip install -r requirements.txt` |
-| 采集时部分来源为空 | 网络或源站改版，看 `ai_news_aggregator.py` 日志 |
-| API 返回 404 | 无 `output/news.json`，先跑 `produce_news.py` |
-| 前端 Failed to fetch | 确认 8001 在跑，检查 nginx |
-| 端口冲突 | 默认 8001，可用 `--port` |
+`/api/v1/ai_news/news` 端点保持原有 JSON 结构不变。新增的 `score`、`source_section`、`meta` 字段对旧前端透明——前端只读 `title` 和 `detail`，多余字段自动忽略。新增的"今日热门"板块会作为 `sections[0]` 出现，旧前端自动渲染为额外一张卡片。
